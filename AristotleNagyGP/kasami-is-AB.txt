@@ -1,0 +1,302 @@
+Human-Readable Proof Outline for kasami is ab
+RequestProject / Kasami AB
+
+1
+
+What the theorem says
+
+The Lean theorem kasami is ab proves that the Kasami power function
+f (x) = xd(k) ,
+
+d(k) = 22k − 2k + 1,
+
+is Almost Bent on a finite field F of characteristic 2, provided that:
+• |F | = 2n ,
+• n ≥ 1 and n is odd,
+• k ≥ 1,
+• gcd(k, n) = 1.
+In the formal development, this is expressed as
+IsAB(hcard, f ),
+where hcard is the hypothesis |F | = 2n and f (x) = xd(k) .
+
+2
+
+Main proof steps
+
+The Lean proof follows a short reduction chain:
+1. Reduce the AB goal to a general moment criterion ab from moments.
+2. Supply the Parseval identity for the Walsh spectrum.
+3. Supply the fourth-moment identity coming from APN.
+4. Supply the divisibility of every Walsh coefficient by a power of 2.
+5. Conclude that the Walsh spectrum has the AB shape, so the function is Almost Bent.
+
+3
+
+Step 1 in detail: reduce to the general AB criterion
+
+The theorem is not proved directly from scratch. Instead, the function is inserted into a general
+theorem from Walsh/AB.lean:
+ab from moments.
+That theorem says that if a function f : F → F satisfies three conditions for every nonzero shift a:
+1
+
+• a Parseval-type second moment identity,
+• a fourth moment identity,
+• a divisibility statement for its Walsh coefficients,
+then f is AB.
+So the role of kasami is ab is to verify those three inputs for the specific Kasami monomial.
+Concretely, the proof first fixes the field hypotheses and the Kasami parameters n and k. Then
+it applies ab from moments to the function
+f (x) = xd(k) .
+At that point, the only remaining job is to fill in the three moment/divisibility assumptions using
+earlier Kasami-specific lemmas.
+
+4
+
+Definitions used in the theorem
+
+This section explains the formal objects that appear in the proof.
+
+4.1
+
+Kasami exponent
+
+The exponent is
+d(k) = 22k − 2k + 1.
+The function under study is the power map
+x 7→ xd(k) .
+This is the standard Kasami monomial.
+
+4.2
+
+Almost Bent (AB)
+
+In the Lean development, the Almost Bent predicate is defined as follows. For a function f : F → F
+and a size hypothesis |F | = 2n ,
+IsAB(f ) : ⇐⇒ ∀a ∈ F, a ̸= 0 → ∀b ∈ F, walsh(f, a, b)2 = 0 or walsh(f, a, b)2 = 2n+1 .
+Equivalently, for every nonzero shift a, every Walsh coefficient squared is forced to be either 0 or
+the fixed value 2n+1 .
+This is the precise AB magnitude pattern used by the theorem ab from moments.
+
+4.3
+
+Walsh transform
+
+The Walsh coefficient of a function f : F → F at (a, b) is defined by
+X
+
+walsh(f, a, b) =
+χ ax + bf (x) ,
+x∈F
+
+where the sign character is
+(
+1
+χ(z) =
+−1
+
+if Tr(z) = 0,
+if Tr(z) ̸= 0.
+
+Here Tr : F → GF(2) is the absolute trace.
+The proof uses three facts about these coefficients:
+2
+
+• Parseval gives a second-moment identity.
+• The APN property gives a fourth-moment identity.
+• A separate divisibility theorem shows each coefficient is divisible by a power of 2.
+
+4.4
+
+Walsh divisibility framework
+
+The Walsh divisibility argument is the step that turns the Kasami exponent identity into the exact
+power-of-two divisibility needed by the AB theorem.
+The chain of reasoning is:
+1. Start with the Kasami Walsh coefficient walsh(x 7→ xd(k) , a, b).
+k
+
+2. Use the bijection x = y 2 +1 to rewrite the sum as a character sum of a quadratic function.
+3. Observe that the resulting exponent pattern is quadratic in the finite-field sense, because its
+third discrete derivative vanishes.
+4. Apply the general quadratic Gauss-sum divisibility theorem: over a field of size 2n with n
+odd, such a sum is divisible by 2(n+1)/2 .
+The relevant formal lemmas are:
+k
+
+• gold pow bijective: the Gold map y 7→ y 2 +1 is a permutation under the Kasami hypotheses.
+• walsh kasami eq quadratic: the Kasami Walsh sum is rewritten using that substitution.
+• sum gold third deriv zero: the substituted polynomial has vanishing third derivative.
+• quadratic gauss sum div: every quadratic character sum over GF (2n ) with n odd is divisible by 2(n+1)/2 .
+• kasami walsh div: the final Kasami divisibility statement.
+Conceptually, this framework is a bridge from algebraic structure to arithmetic output: the
+exponent d(k) is special enough that the Walsh sum becomes quadratic after a change of variables,
+and odd-dimensional quadratic sums are forced to have large 2-adic valuation.
+
+4.5
+
+Quadratic Gauss-sum divisibility
+
+The general theorem used at the end of the Walsh divisibility framework is quadratic gauss sum div.
+It says that if Q : F → F is quadratic in the sense that its third discrete derivative vanishes, and
+if |F | = 2n with n odd, then the character sum
+X
+
+χ Q(x)
+x∈F
+
+is divisible by
+2(n+1)/2 .
+
+3
+
+The proof has two stages. First, one squares the sum and rewrites
+!2
+X
+χ(Q(x))
+x
+
+as a double sum of the form
+XX
+u
+
+χ(Q(u + y) + Q(y)).
+
+y
+
+For fixed u, this inner expression is split into a constant factor and an additive character sum
+involving
+B(u, y) = Q(u + y) + Q(u) + Q(y) + Q(0).
+The quadratic hypothesis implies that B(u, ·) is additive, so the additive-character lemma forces
+its sum to be divisible by |F | = 2n . That gives 2n | S 2 for the original sum S.
+Second, since n is odd, a 2-adic parity lemma upgrades divisibility of the square to divisibility
+of the sum itself: from 2n | S 2 it follows that
+2(n+1)/2 | S.
+This is the exact mechanism behind the theorem quadratic gauss sum div, and it is the generic
+result that kasami walsh div instantiates after rewriting the Kasami Walsh sum into quadratic
+form.
+
+4.6
+
+APN
+
+APN means almost perfect nonlinear. For a function in characteristic 2, this is the differential uniformity condition that every nonzero derivative equation has at most two solutions. The
+Kasami APN theorem is proved elsewhere in the project and is imported here through the lemma
+kasami is apn pred.
+
+4.7
+
+Bijectivity
+
+The proof also needs the Kasami map to be a permutation of the finite field. This is established
+by proving injectivity first and then using the finite-set fact that injective self-maps are bijective.
+
+4.8
+
+The field hypotheses
+
+The conditions
+|F | = 2n ,
+
+n odd,
+
+n≥1
+
+ensure that the Walsh-spectrum theorem applies in the intended odd-dimensional characteristic-2
+setting. The conditions on k are the usual Kasami arithmetic assumptions: k ≥ 1 and gcd(k, n) = 1.
+
+5
+
+How the proof closes
+
+After Step 1 reduces the theorem to the general criterion ab from moments, the proof enters the
+final deduction layer formalized in Walsh/AB.lean. That file isolates the abstract argument showing
+that three Walsh-spectrum inputs are enough to force the Almost Bent conclusion.
+For a function f : F → F , the theorem ab from moments assumes that for each nonzero a ∈ F
+one has:
+4
+
+• the Parseval identity
+
+X
+
+Wf (a, b)2 = |F |2 ,
+
+b∈F
+
+• the fourth-moment identity
+
+X
+
+Wf (a, b)4 = 2|F |3 ,
+
+b∈F
+
+• the divisibility statement
+2(n+1)/2 | Wf (a, b)
+
+for all b ∈ F.
+
+The Kasami proof supplies these three hypotheses by previously established lemmas:
+• Parseval comes from the fact that the Kasami map is a permutation.
+• The fourth moment comes from the APN property together with the power-map moment
+theorem.
+• The divisibility input comes from the dedicated Kasami Walsh-divisibility theorem.
+At that stage, the remaining reasoning is purely arithmetic. The divisibility hypothesis allows
+one to write each Walsh coefficient in the form
+Wf (a, b) = 2(n+1)/2 kb ,
+
+kb ∈ Z.
+
+Substituting this into the second-moment identity gives
+X
+kb2 = 2n−1 ,
+b∈F
+
+while substituting into the fourth-moment identity gives
+X
+kb4 = 2n−1 .
+b∈F
+
+Hence
+X
+
+
+kb4 − kb2 = 0.
+
+b∈F
+
+The key integer lemma in Walsh/AB.lean is that for every integer k,
+k 4 − k 2 = k 2 (k 2 − 1) ≥ 0.
+Therefore each summand kb4 − kb2 is nonnegative. Since their total sum is zero, every individual
+term must vanish, so
+kb2 ∈ {0, 1}
+for every b ∈ F.
+Multiplying back by the common factor 2n+1 yields
+Wf (a, b)2 = 2n+1 kb2 ∈ {0, 2n+1 }.
+This is exactly the definition of the Almost Bent property.
+So the proof closes in a modular way: all Kasami-specific field theory and Walsh analysis are used
+only to establish the three hypotheses of ab from moments, and the last step is an abstract integerlattice argument converting moment identities plus divisibility into the AB magnitude pattern.
+5
+
+Remark. Although it is classically known that in odd dimension the AB property implies APN,
+that implication is not used in this development. The logical direction here is the reverse one: the
+Kasami map is first shown to be APN, that APN input is used to obtain the fourth-moment identity, and then ab from moments combines Parseval, the fourth moment, and the Walsh divisibility
+theorem to conclude that the map is AB.
+
+6
+
+One-paragraph summary
+2k
+
+k
+
+The theorem kasami is ab proves that the Kasami power map x 7→ x2 −2 +1 is Almost Bent over
+a finite field of size 2n when n is odd and k satisfies the standard Kasami coprimality assumptions.
+The proof is modular: instead of analyzing the Walsh spectrum directly, it reduces the AB claim
+to a general moment criterion, then fills in the Parseval identity, the fourth-moment identity, and
+a divisibility bound using earlier Kasami-specific results.
+
+6
+
+

@@ -1,3 +1,19 @@
+# Summary of changes for run 3c8867ed-c662-476e-bb01-f31d2c5bf57c
+I formalized and fully proved that the Kasami power function x ↦ x^(4^k − 2^k + 1) on GF(2^n) is **Almost Bent (AB)** when n is odd, k ≥ 1, k < n, and gcd(k,n) = 1, following the approach in the attached paper (kasami-is-AB.pdf).
+
+The development builds with no `sorry`/`admit` and no added axioms; the main theorem `GeneralizedKasami.kasami_is_ab` depends only on the standard axioms `propext`, `Classical.choice`, `Quot.sound`.
+
+New files (under `RequestProject/Walsh/`) and what they prove:
+
+- `Character.lean` — the absolute trace `Tr(z) = Σ_{i<n} z^{2^i}`, the sign character χ(z) = (−1)^{Tr z}, its additivity/multiplicativity, and the fundamental orthogonality relation `Σ_x χ(c·x) = 2^n` if c = 0 else 0.
+- `AB.lean` — the Walsh transform `W_f(a,b) = Σ_x χ(a·x + b·f(x))`, the Almost Bent predicate `IsAB`, and the abstract moment criterion `ab_from_moments`: a permutation whose Walsh spectrum satisfies Parseval, the fourth-moment identity, and 2^{(n+1)/2}-divisibility is AB (via an integer-lattice argument reducing Σ(k^4 − k^2) = 0 to k^2 ∈ {0,1}).
+- `Parseval.lean` — the Parseval identity `Σ_b W_f(a,b)^2 = 2^{2n}` for a permutation f.
+- `Fourth.lean` — the fourth-moment identity `Σ_b W_f(a,b)^4 = 2·2^{3n}` for a permutation APN monomial and nonzero a. This is obtained by reducing the moment to a weighted quadruple count, evaluating the total count (2^{3n}, from bijectivity) and the "linear-structure" count (3·2^{2n} − 2·2^n, from the APN 2-to-1 property), and combining them via a scaling/character reindexing identity.
+- `Divisibility.lean` — 2^{(n+1)/2} divides every Kasami Walsh coefficient. Uses the Gold substitution x = y^{2^k+1} (a permutation, since gcd(2^k+1, 2^n−1) = 1 for n odd), the exponent identity (2^k+1)(4^k−2^k+1) = 2^{3k}+1 that turns the Walsh sum into a quadratic character sum, divisibility of the square of a quadratic character sum by 2^n (via additivity of the associated bilinear form), and a 2-adic upgrade valid for odd n.
+- `KasamiAB.lean` — the main theorem `kasami_is_ab`, assembling the three inputs through `ab_from_moments`, using the already-proved APN theorem (`kasami_isAPN`) and permutation property of the Kasami map.
+
+The file `RequestProject.lean` now also imports `RequestProject.KasamiAB`. The previously established results in the project (including the APN theorem) were reused rather than duplicated. The full project builds successfully.
+
 # Summary of changes for run 025a5c88-3508-462b-8a80-aa56005f9ee7
 Created `RequestProject/KasamiAPN.lean` and imported it from `RequestProject.lean`.
 
