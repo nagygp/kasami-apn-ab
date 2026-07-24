@@ -45,20 +45,21 @@ abbrev IsAPN {F : Type*} [Field F] [CharP F 2] (f : F → F) : Prop :=
 
 /-- **Corollary 2 (Dobbertin 1999) — Kasami power functions are APN.**
 
-Let `F = 𝔽_{2ⁿ}` with `n` odd, and let `k` be odd with `1 < k < n` and
+Let `F = 𝔽_{2ⁿ}` with `n` odd, and let `1 < k < n` with
 `gcd(k, n) = 1`.  Then the Kasami power function `x ↦ x^d`, with the Kasami
 exponent `d = 2^{2k} − 2^k + 1`, is almost perfect nonlinear.
 
 This is the endpoint of the MCM → APN chain: the Müller–Cohen–Matthews
 permutation theorem (`Dobbertin1999.MCM`) enters through the key identity and the
 Gold permutation (`Dobbertin1999.MCMtoAPN`) and collapses, via the two-to-one map
-`t ↦ t^{2^k} + t`, to the APN property.  Reuses `KasamiAPN.kasami_is_apn`. -/
+`t ↦ t^{2^k} + t`, to the APN property. Reuses
+`KasamiAPN.kasami_is_apn_odd_n`. -/
 theorem kasami_is_apn {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
+    (hk : 1 < k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
     IsAPN (fun (x : F) => x ^ (kasamiExp k)) :=
-  KasamiAPN.kasami_is_apn hn k hk hk_odd hkn hn_odd hcop
+  KasamiAPN.kasami_is_apn_odd_n hn k hk hkn hn_odd hcop
 
 /-
 **Corollary 2 — literal Nyberg phrasing (solution count).**
@@ -73,7 +74,7 @@ solution set (`a ≠ 0`); together with the collision form `kasami_is_apn`
 -/
 theorem kasami_is_apn_solution_count {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
+    (hk : 1 < k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n)
     (a : F) (ha : a ≠ 0) (b : F) :
     Nat.card {x : F // (x + a) ^ (kasamiExp k) + x ^ (kasamiExp k) = b} = 0 ∨
@@ -81,7 +82,7 @@ theorem kasami_is_apn_solution_count {F : Type*} [Field F] [Fintype F] [CharP F 
   -- By the APN property, if there are two distinct solutions $x$ and $y$, then $y = x + a$.
   have h_apn : ∀ x y : F, (x + a) ^ (kasamiExp k) + x ^ (kasamiExp k) = b → (y + a) ^ (kasamiExp k) + y ^ (kasamiExp k) = b → y = x ∨ y = x + a := by
     intro x y hx hy;
-    apply (kasami_is_apn hn k hk hk_odd hkn hn_odd hcop) a ha x y;
+    apply (kasami_is_apn hn k hk hkn hn_odd hcop) a ha x y;
     grind;
   by_cases h : ∃ x : F, ( x + a ) ^kasamiExp k + x ^kasamiExp k = b <;> simp_all +decide [ Nat.card_eq_zero ];
   obtain ⟨ x, hx ⟩ := h;

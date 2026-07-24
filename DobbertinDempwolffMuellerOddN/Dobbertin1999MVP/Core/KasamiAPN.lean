@@ -1,4 +1,6 @@
 import Mathlib
+import Dobbertin1999MVP.Core.KasamiDefs
+import Dobbertin1999MVP.Core.FrobeniusMove
 import Dobbertin1999MVP.FiniteField.Thm32
 import Dobbertin1999MVP.FiniteField.ExpArith
 import Dobbertin1999MVP.FiniteField.FrobAlg
@@ -23,19 +25,6 @@ namespace KasamiAPN
 open DempwolffMueller Finset BigOperators
 
 set_option maxHeartbeats 1600000
-
--- ═══════════════════════════════════════════
--- Definitions
--- ═══════════════════════════════════════════
-
-/-- A function f : F → F is APN (Almost Perfect Nonlinear) if for every nonzero a,
-any collision f(x+a)+f(x) = f(y+a)+f(y) forces y ∈ {x, x+a}. -/
-def IsAPN {F : Type*} [Field F] [CharP F 2] (f : F → F) : Prop :=
-  ∀ (a : F), a ≠ 0 → ∀ (x y : F),
-    f (x + a) + f x = f (y + a) + f y → y = x ∨ y = x + a
-
-/-- The Kasami exponent d = 2^{2k} - 2^k + 1. -/
-def kasamiExp (k : ℕ) : ℕ := 2 ^ (2 * k) - 2 ^ k + 1
 
 /-
 ═══════════════════════════════════════════
@@ -249,14 +238,22 @@ lemma kasami_collision_forces_equal_u {F : Type*} [Field F] [Fintype F] [CharP F
       have h_eq : (x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) + 1 = 0 := by
         have h_eq : x ^ 2 = x := by
           grind;
-        cases eq_or_ne x 0 <;> simp_all +decide [ sq ];
-        · rw [ ← hdiff ] ; norm_num [ kasamiExp ];
-          grind +splitImp;
-        · grind +locals;
+        have hchar : (1 : F) + 1 = 0 := by
+          rw [ ← two_smul F 1, CharTwo.two_eq_zero, zero_smul ]
+        cases eq_or_ne x 0 with
+        | inl hx0 =>
+            subst x
+            simp [hchar, kasamiExp]
+        | inr hx0 =>
+            have hx1 : x = 1 := by
+              apply mul_left_cancel₀ hx0
+              simpa [pow_two] using h_eq
+            subst x
+            simp [hchar, kasamiExp]
       have := kasami_key_identity hn k ( by linarith ) ( by linarith ) y; simp_all +decide [ add_eq_zero_iff_eq_neg ] ;
     have h_eq : truncTrace k (y ^ 2 + y) = 0 := by
       rw [ truncTrace_artin_schreier ] ; aesop;
-    grind +suggestions;
+    exact absurd (truncTrace_ker_trivial hn k hk_odd (by linarith) (by linarith) hcop h_eq) hy;
   · have h_eq : (y + 1) ^ kasamiExp k + y ^ kasamiExp k = 1 := by
       have h_eq : y = 0 ∨ y = 1 := by
         grind +suggestions;
@@ -312,7 +309,7 @@ is APN on F.
 The proof uses the Dempwolff–Müller Theorem 3.2 (LxXk'_bijective) as its core
 engine, connecting the Kasami differential to the truncated trace via the
 key identity and decomposing the resulting map as a composition of two bijections. -/
-theorem kasami_is_apn {F : Type*} [Field F] [Fintype F] [CharP F 2]
+theorem kasami_is_apn_odd_n_odd_k {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
     (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
@@ -336,5 +333,64 @@ theorem kasami_is_apn {F : Type*} [Field F] [Fintype F] [CharP F 2]
     have : y = x + y + x := by
       rw [add_comm x y, add_assoc]; simp [CharTwo.add_self_eq_zero]
     rwa [h, add_comm] at this
+
+/--
+Kasami APN for odd `n` and even `k`: reduce from `k` to `n-k` via Frobenius.
+
+Assume `n` odd, `k` even, `1 < k < n`, and `gcd(k,n)=1`. Then
+`x ↦ x^(2^(2k)-2^k+1)` is APN on `GF(2^n)`.
+-/
+theorem kasami_is_apn_odd_n_even_k {F : Type*} [Field F] [Fintype F] [CharP F 2]
+    {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
+    (hk : 1 < k) (hk_even : Even k) (hkn : k < n) (hnk : 1 < n - k)
+    (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
+    IsAPN (fun (x : F) => x ^ (kasamiExp k)) := by
+  have hkn_le : k ≤ n := Nat.le_of_lt hkn
+  have hnk_odd : Odd (n - k) := Nat.Odd.sub_even hkn_le hn_odd hk_even
+  have hcop_nk_n : Nat.Coprime (n - k) n :=
+    (Nat.coprime_self_sub_left hkn_le).2 hcop
+  have hnk_lt_n : n - k < n := by omega
+  have h_apn_nk : IsAPN (fun (x : F) => x ^ (kasamiExp (n - k))) :=
+    kasami_is_apn_odd_n_odd_k hn (n - k) hnk hnk_odd hnk_lt_n hn_odd hcop_nk_n
+  exact (kasami_apn_iff_complement (F := F) hn k hkn_le).2 h_apn_nk
+
+theorem kasami_is_apn_odd_n {F : Type*} [Field F] [Fintype F] [CharP F 2]
+    {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
+    (hk : 1 < k) (hkn : k < n) (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
+    IsAPN (fun (x : F) => x ^ (kasamiExp k)) := by
+  by_cases hk_odd : Odd k
+  · exact kasami_is_apn_odd_n_odd_k hn k hk hk_odd hkn hn_odd hcop
+  · have hk_even : Even k := Nat.not_odd_iff_even.mp hk_odd
+    by_cases hnk : 1 < n - k
+    · exact kasami_is_apn_odd_n_even_k hn k hk hk_even hkn hnk hn_odd hcop
+    · have hnk_eq : n - k = 1 := by omega
+      have h_cubic : IsAPN (fun (x : F) => x ^ 3) := by
+        apply apn_of_normalized
+        intro x y h
+        have htwo : (2 : F) = 0 := CharP.cast_eq_zero F 2
+        have hthree : (3 : F) = 1 := by
+          calc
+            (3 : F) = (2 : F) + 1 := by norm_num
+            _ = 1 := by rw [htwo, zero_add]
+        have hxy : x ^ 2 + x = y ^ 2 + y := by
+          ring_nf at h
+          simp only [htwo, hthree, mul_zero, mul_one, add_zero] at h
+          linear_combination h
+        have hsum : (x + y) ^ 2 + (x + y) = 0 := by
+          rw [add_pow_char (R := F) (p := 2)]
+          calc
+            x ^ 2 + y ^ 2 + (x + y) = (x ^ 2 + x) + (y ^ 2 + y) := by ring
+            _ = 0 := by rw [hxy, CharTwo.add_self_eq_zero]
+        rw [sq_add_self_eq_zero_char2] at hsum
+        rcases hsum with h | h
+        · left
+          simpa only [CharTwo.neg_eq] using eq_neg_of_add_eq_zero_right h
+        · right
+          calc
+            y = 1 - x := eq_sub_of_add_eq' h
+            _ = x + 1 := by simp [sub_eq_add_neg, CharTwo.neg_eq, add_comm]
+      have h_apn_one : IsAPN (fun (x : F) => x ^ kasamiExp (n - k)) := by
+        simpa [hnk_eq, kasamiExp] using h_cubic
+      exact (kasami_apn_iff_complement (F := F) hn k (Nat.le_of_lt hkn)).2 h_apn_one
 
 end KasamiAPN
