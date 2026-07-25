@@ -20,6 +20,10 @@ prerequisites.  Every statement is proved end to end; the whole chain is
 `sorry`-free and rests only on the standard axioms `propext`, `Classical.choice`,
 `Quot.sound`.
 
+The APN result formalised here is **only for odd extension degree** `n`: throughout
+the final Kasami theorem, `F = 𝔽_{2ⁿ}` and `Odd n`. The exponent parameter `k`
+need not itself be odd.
+
 ## Module layout
 
 * `Dobbertin1999MVP/FiniteField/` — the finite-field engine: exponent arithmetic
@@ -29,13 +33,20 @@ prerequisites.  Every statement is proved end to end; the whole chain is
   `DempwolffMueller.theorem_3_2` (`Thm32`).
 * `Dobbertin1999MVP/Core/KasamiAPN.lean` — the Kasami APN engine built on top of
   the MCM permutation theorem (key identity, Gold permutation, injectivity
-  bridge, two-to-one collapse, `KasamiAPN.kasami_is_apn`).
+  bridge, two-to-one collapse, `KasamiAPN.kasami_is_apn_odd_n`).
 * `Dobbertin1999MVP/Dobbertin1999/` — the paper transcription in three parts:
     * `MCM.lean` — the MCM permutation polynomial theorem (Section 2);
     * `MCMtoAPN.lean` — the bridge used in the proof of Corollary 2;
     * `APN.lean` — Corollary 2: Kasami power functions are APN.
 
 ## The MCM → APN chain, end to end
+
+This chain concludes the APN theorem only when `n` is odd. For odd `k`, the MCM
+argument below applies directly. For even `k`, the proof uses the Frobenius move
+`KasamiAPN.kasami_apn_iff_complement` to replace `k` with `n - k`; since `n` is
+odd, `n - k` is odd, so the direct odd-`k` argument applies to the complementary
+Kasami exponent. The exceptional complementary parameter `n - k = 1` is the
+cubic (`x ↦ x³`) case.
 
 ```
 Dobbertin1999.MCM.mcm_permutation_ktransfer        (Müller–Cohen–Matthews / Theorem 1 engine)
@@ -47,7 +58,9 @@ Dobbertin1999.MCMtoAPN.mcm_injective_bridge         MCM ∘ Gold injectivity
 Dobbertin1999.MCMtoAPN.kasami_collision_forces_equal_u   collision ⟹ x²+x = y²+y
         │   (t ↦ t^{2^k}+t is two-to-one)
         ▼
-Dobbertin1999.APN.kasami_is_apn                     Corollary 2: x ↦ x^d is APN
+KasamiAPN.kasami_apn_iff_complement                 even k: Frobenius move k ↦ n-k
+        ▼                                            (n-k is odd when n is odd)
+Dobbertin1999.APN.kasami_is_apn                     Corollary 2, odd n: x ↦ x^d is APN
 Dobbertin1999.APN.kasami_is_apn_solution_count      Nyberg form: 0 or exactly 2 solutions
 ```
 -/
