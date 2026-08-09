@@ -3,7 +3,7 @@ import AlmostBent.Defs
 /-!
 # Kasami Almost Perfect Nonlinear (APN) Theorem
 
-## Main Result by `sorry`
+## Interface for the APN property for odd `n`
 
 The Kasami power function `x ↦ x^d` with `d = 2^{2k} − 2^k + 1` is
 **Almost Perfect Nonlinear (APN)** on `GF(2ⁿ)` when `gcd(k, n) = 1`, `k ≥ 1`.

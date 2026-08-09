@@ -17,7 +17,7 @@ lean_lib AlmostBent where
     `AlmostBent.QuadraticDivisibility,
     `AlmostBent.WalshDiv,
     `AlmostBent.WalshLayers,
-    `AlmostBent.KasamiAPNbysorry,
+    `AlmostBent.KasamiAPNInterface,
     `AlmostBent.KasamiAB,
     `WalshAB
   ]

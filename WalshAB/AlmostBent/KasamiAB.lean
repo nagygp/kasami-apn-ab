@@ -4,7 +4,7 @@ import AlmostBent.WalshDiv
 -------------------------------------------
 -- Replace the following import with a
 -- proper proof of the Kasami APN theorem
-import AlmostBent.KasamiAPNbysorry
+import AlmostBent.KasamiAPNInterface
 -------------------------------------------
 
 /-!
