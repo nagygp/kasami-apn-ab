@@ -1,5 +1,5 @@
 # kasami-apn-ab
-Formal Lean proofs that the Kasami monomial is APN and AB, and that the related MCM polynomial is a permutation.
+Formal Lean proofs that the Kasami monomial is Almost Perfect Nonlinear (APN) and Almost Bent (AB), and that the related MCM polynomial is a permutation.
 
 ## Quick start
 Build the project with:
@@ -14,23 +14,28 @@ lake build
 - Lean translation of the permutation proof for the MCM polynomial (based on Dobbertin 1998).
 - APN property for Kasami monomials: follows directly for odd k; for even k (with odd n) use the standard equivalence between k and n-k.
 - Separate translation/implementations: Aristotle‑translated versions and a Dobbertin/Dempwolff/Müller adaptation for odd n.
+- AB property is shown from the APN property (n must be odd anyway), and the Walsh divisibility trick, which uses a near-quadratic property of the Kasami monomial function.
 
 
-### AristotleGPT56TerraNagyGP  
+### (1) AristotleGPT56TerraNagyGP  
 
 The proof of the permutation property of the MCM polynomial has been translated to [Lean](https://lean-lang.org/) by [@Aristotle-Harmonic](https://aristotle.harmonic.fun/). We obtained the APN property of the Kasami monomial using [OpenAI](openai.com)'s GPT-5.6 (Terra version) large language model.
 
-### AristotleNagyGP
+### (2) AristotleNagyGP
 
 The whole proof was translated to [Lean](https://lean-lang.org/) by [@Aristotle-Harmonic](https://aristotle.harmonic.fun/).
 
-### DobbertinDempwolffMuellerOddN
+### (3) DobbertinDempwolffMuellerOddN
 
 In this component we prove that the MCM polynomial is a permutation when `n` is odd. The argument follows Dempwolff–Müller [DM2013], which is considerably simpler than Dobbertin's original proof.
 
 Consequently, the APN property is established here only for odd `n`.
 
 This work was contributed by [@Aristotle-Harmonic](https://aristotle.harmonic.fun/).
+
+### (4) WalshAB
+
+A **APN + Walsh divisibility = AB** interface to prove the AB property the Kasami function (n odd) when the APN property is already given.
 
 ## References
 
