@@ -8,6 +8,12 @@ import AlmostBent.Defs
 The Kasami power function `x ↦ x^d` with `d = 2^{2k} − 2^k + 1` is
 **Almost Perfect Nonlinear (APN)** on `GF(2ⁿ)` when `gcd(k, n) = 1`, `k ≥ 1`.
 
+Usage:
+
+1. Copy the folder `WalshAB` in your project.
+2. Replace sorry in the proof below.
+3. Update the import paths to point to the copied `WalshAB` folder.
+
 -/
 
 set_option maxHeartbeats 800000
@@ -19,7 +25,7 @@ open Finset Fintype CollisionAnalysis
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
 
 /-- **Kasami APN**: the Kasami power function `x^d` is APN. -/
-theorem kasami_apn {k n : ℕ} (hk : k ≥ 1) (hn : n ≥ 1)
+theorem kasami_apn {k n : ℕ} (hk : k ≥ 1) (hkn : k < n)
     (hcop : Nat.Coprime k n) (hnodd : Odd n)
     (hcard : Fintype.card F = 2 ^ n) :
     ∀ a : F, a ≠ 0 → ∀ b : F,
