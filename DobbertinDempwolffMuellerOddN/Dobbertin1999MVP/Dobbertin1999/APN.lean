@@ -45,7 +45,7 @@ abbrev IsAPN {F : Type*} [Field F] [CharP F 2] (f : F → F) : Prop :=
 
 /-- **Corollary 2 (Dobbertin 1999) — Kasami power functions are APN.**
 
-Let `F = 𝔽_{2ⁿ}` with `n` odd, and let `1 < k < n` with
+Let `F = 𝔽_{2ⁿ}` with `n` odd, and let `0 < k < n` with
 `gcd(k, n) = 1`.  Then the Kasami power function `x ↦ x^d`, with the Kasami
 exponent `d = 2^{2k} − 2^k + 1`, is almost perfect nonlinear.
 
@@ -56,7 +56,7 @@ Gold permutation (`Dobbertin1999.MCMtoAPN`) and collapses, via the two-to-one ma
 `KasamiAPN.kasami_is_apn_odd_n`. -/
 theorem kasami_is_apn {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hkn : k < n)
+    (hk : 0 < k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
     IsAPN (fun (x : F) => x ^ (kasamiExp k)) :=
   KasamiAPN.kasami_is_apn_odd_n hn k hk hkn hn_odd hcop
@@ -74,7 +74,7 @@ solution set (`a ≠ 0`); together with the collision form `kasami_is_apn`
 -/
 theorem kasami_is_apn_solution_count {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hkn : k < n)
+    (hk : 0 < k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n)
     (a : F) (ha : a ≠ 0) (b : F) :
     Nat.card {x : F // (x + a) ^ (kasamiExp k) + x ^ (kasamiExp k) = b} = 0 ∨

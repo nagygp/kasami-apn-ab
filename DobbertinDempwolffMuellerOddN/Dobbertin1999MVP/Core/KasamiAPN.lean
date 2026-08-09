@@ -222,52 +222,64 @@ The Kasami differential collision forces x²+x = y²+y.
 -/
 lemma kasami_collision_forces_equal_u {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
+    (hk : 0 < k) (hk_odd : Odd k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n)
     {x y : F}
     (hdiff : (x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) =
              (y + 1) ^ (kasamiExp k) + y ^ (kasamiExp k)) :
     x ^ 2 + x = y ^ 2 + y := by
-  have h_eq : (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) * (y ^ 2 + y) ^ (2 ^ k) = (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) * (x ^ 2 + x) ^ (2 ^ k) := by
-    have h_eq : ((x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) + 1) * (x ^ 2 + x) ^ (2 ^ k) = (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) ∧ ((y + 1) ^ (kasamiExp k) + y ^ (kasamiExp k) + 1) * (y ^ 2 + y) ^ (2 ^ k) = (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) := by
-      exact ⟨ kasami_key_identity hn k ( by linarith ) ( by linarith ) x, kasami_key_identity hn k ( by linarith ) ( by linarith ) y ⟩;
-    grind;
-  by_cases hx : x ^ 2 + x = 0 <;> by_cases hy : y ^ 2 + y = 0;
-  · rw [hx, hy];
-  · have h_eq : (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) = 0 := by
-      have h_eq : (x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) + 1 = 0 := by
-        have h_eq : x ^ 2 = x := by
-          grind;
-        have hchar : (1 : F) + 1 = 0 := by
-          rw [ ← two_smul F 1, CharTwo.two_eq_zero, zero_smul ]
-        cases eq_or_ne x 0 with
-        | inl hx0 =>
-            subst x
-            simp [hchar, kasamiExp]
-        | inr hx0 =>
-            have hx1 : x = 1 := by
-              apply mul_left_cancel₀ hx0
-              simpa [pow_two] using h_eq
-            subst x
-            simp [hchar, kasamiExp]
-      have := kasami_key_identity hn k ( by linarith ) ( by linarith ) y; simp_all +decide [ add_eq_zero_iff_eq_neg ] ;
-    have h_eq : truncTrace k (y ^ 2 + y) = 0 := by
-      rw [ truncTrace_artin_schreier ] ; aesop;
-    exact absurd (truncTrace_ker_trivial hn k hk_odd (by linarith) (by linarith) hcop h_eq) hy;
-  · have h_eq : (y + 1) ^ kasamiExp k + y ^ kasamiExp k = 1 := by
-      have h_eq : y = 0 ∨ y = 1 := by
-        grind +suggestions;
-      rcases h_eq with ( rfl | rfl ) <;> simp_all +decide [ kasamiExp ];
-    have h_eq : x ^ (2 ^ k) + x = 0 := by
-      have h_eq : (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) = 0 := by
-        grind +suggestions;
-      exact eq_zero_of_pow_eq_zero h_eq;
-    have h_eq : truncTrace k (x ^ 2 + x) = 0 := by
-      rw [ truncTrace_artin_schreier ] ; aesop;
-    exact absurd ( truncTrace_ker_trivial hn k hk_odd ( by linarith ) ( by linarith ) hcop h_eq ) hx;
-  · have := phi_injective_on_units hn k hk hk_odd hkn hn_odd hcop hx hy ?_;
-    · exact this;
-    · rw [ truncTrace_artin_schreier, truncTrace_artin_schreier ] ; aesop
+  by_cases hk_one : k = 1
+  · subst k
+    have htwo : (2 : F) = 0 := CharP.cast_eq_zero F 2
+    have hthree : (3 : F) = 1 := by
+      calc
+        (3 : F) = (2 : F) + 1 := by norm_num
+        _ = 1 := by rw [htwo, zero_add]
+    simp only [kasamiExp] at hdiff
+    ring_nf at hdiff
+    simp only [htwo, hthree, mul_zero, mul_one, add_zero] at hdiff
+    linear_combination hdiff
+  · have hk_gt : 1 < k := by omega
+    have h_eq : (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) * (y ^ 2 + y) ^ (2 ^ k) = (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) * (x ^ 2 + x) ^ (2 ^ k) := by
+      have h_eq : ((x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) + 1) * (x ^ 2 + x) ^ (2 ^ k) = (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) ∧ ((y + 1) ^ (kasamiExp k) + y ^ (kasamiExp k) + 1) * (y ^ 2 + y) ^ (2 ^ k) = (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) := by
+        exact ⟨ kasami_key_identity hn k ( by linarith ) ( by linarith ) x, kasami_key_identity hn k ( by linarith ) ( by linarith ) y ⟩;
+      grind;
+    by_cases hx : x ^ 2 + x = 0 <;> by_cases hy : y ^ 2 + y = 0;
+    · rw [hx, hy];
+    · have h_eq : (y ^ (2 ^ k) + y) ^ (2 ^ k + 1) = 0 := by
+        have h_eq : (x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) + 1 = 0 := by
+          have h_eq : x ^ 2 = x := by
+            grind;
+          have hchar : (1 : F) + 1 = 0 := by
+            rw [ ← two_smul F 1, CharTwo.two_eq_zero, zero_smul ]
+          cases eq_or_ne x 0 with
+          | inl hx0 =>
+              subst x
+              simp [hchar, kasamiExp]
+          | inr hx0 =>
+              have hx1 : x = 1 := by
+                apply mul_left_cancel₀ hx0
+                simpa [pow_two] using h_eq
+              subst x
+              simp [hchar, kasamiExp]
+        have := kasami_key_identity hn k ( by linarith ) ( by linarith ) y; simp_all +decide [ add_eq_zero_iff_eq_neg ] ;
+      have h_eq : truncTrace k (y ^ 2 + y) = 0 := by
+        rw [ truncTrace_artin_schreier ] ; aesop;
+      exact absurd (truncTrace_ker_trivial hn k hk_odd (by linarith) (by linarith) hcop h_eq) hy;
+    · have h_eq : (y + 1) ^ kasamiExp k + y ^ kasamiExp k = 1 := by
+        have h_eq : y = 0 ∨ y = 1 := by
+          grind +suggestions;
+        rcases h_eq with ( rfl | rfl ) <;> simp_all +decide [ kasamiExp ];
+      have h_eq : x ^ (2 ^ k) + x = 0 := by
+        have h_eq : (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) = 0 := by
+          grind +suggestions;
+        exact eq_zero_of_pow_eq_zero h_eq;
+      have h_eq : truncTrace k (x ^ 2 + x) = 0 := by
+        rw [ truncTrace_artin_schreier ] ; aesop;
+      exact absurd ( truncTrace_ker_trivial hn k hk_odd ( by linarith ) ( by linarith ) hcop h_eq ) hx;
+    · have := phi_injective_on_units hn k hk_gt hk_odd hkn hn_odd hcop hx hy ?_;
+      · exact this;
+      · rw [ truncTrace_artin_schreier, truncTrace_artin_schreier ] ; aesop
 
 /-
 ═══════════════════════════════════════════
@@ -311,13 +323,13 @@ engine, connecting the Kasami differential to the truncated trace via the
 key identity and decomposing the resulting map as a composition of two bijections. -/
 theorem kasami_is_apn_odd_n_odd_k {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
+    (hk : 0 < k) (hk_odd : Odd k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
     IsAPN (fun (x : F) => x ^ (kasamiExp k)) := by
   apply apn_of_normalized
   intro x y hdiff
   have hu : x ^ 2 + x = y ^ 2 + y :=
-    kasami_collision_forces_equal_u hn k hk hk_odd hkn hn_odd hcop hdiff
+    kasami_collision_forces_equal_u hn k (by linarith) hk_odd hkn hn_odd hcop hdiff
   -- x²+x = y²+y means (x+y)²+(x+y) = 0
   have h_sum_zero : (x + y) ^ 2 + (x + y) = 0 := by
     have h2 : (x + y) ^ 2 = x ^ 2 + y ^ 2 := add_pow_char (R := F) (p := 2) x y
@@ -342,7 +354,7 @@ Assume `n` odd, `k` even, `1 < k < n`, and `gcd(k,n)=1`. Then
 -/
 theorem kasami_is_apn_odd_n_even_k {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_even : Even k) (hkn : k < n) (hnk : 1 < n - k)
+    (hk : 0 < k) (hk_even : Even k) (hkn : k < n) (hnk : 0 < n - k)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
     IsAPN (fun (x : F) => x ^ (kasamiExp k)) := by
   have hkn_le : k ≤ n := Nat.le_of_lt hkn
@@ -356,41 +368,12 @@ theorem kasami_is_apn_odd_n_even_k {F : Type*} [Field F] [Fintype F] [CharP F 2]
 
 theorem kasami_is_apn_odd_n {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hkn : k < n) (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
+    (hk : 0 < k) (hkn : k < n) (hn_odd : Odd n) (hcop : Nat.Coprime k n) :
     IsAPN (fun (x : F) => x ^ (kasamiExp k)) := by
   by_cases hk_odd : Odd k
   · exact kasami_is_apn_odd_n_odd_k hn k hk hk_odd hkn hn_odd hcop
   · have hk_even : Even k := Nat.not_odd_iff_even.mp hk_odd
-    by_cases hnk : 1 < n - k
-    · exact kasami_is_apn_odd_n_even_k hn k hk hk_even hkn hnk hn_odd hcop
-    · have hnk_eq : n - k = 1 := by omega
-      have h_cubic : IsAPN (fun (x : F) => x ^ 3) := by
-        apply apn_of_normalized
-        intro x y h
-        have htwo : (2 : F) = 0 := CharP.cast_eq_zero F 2
-        have hthree : (3 : F) = 1 := by
-          calc
-            (3 : F) = (2 : F) + 1 := by norm_num
-            _ = 1 := by rw [htwo, zero_add]
-        have hxy : x ^ 2 + x = y ^ 2 + y := by
-          ring_nf at h
-          simp only [htwo, hthree, mul_zero, mul_one, add_zero] at h
-          linear_combination h
-        have hsum : (x + y) ^ 2 + (x + y) = 0 := by
-          rw [add_pow_char (R := F) (p := 2)]
-          calc
-            x ^ 2 + y ^ 2 + (x + y) = (x ^ 2 + x) + (y ^ 2 + y) := by ring
-            _ = 0 := by rw [hxy, CharTwo.add_self_eq_zero]
-        rw [sq_add_self_eq_zero_char2] at hsum
-        rcases hsum with h | h
-        · left
-          simpa only [CharTwo.neg_eq] using eq_neg_of_add_eq_zero_right h
-        · right
-          calc
-            y = 1 - x := eq_sub_of_add_eq' h
-            _ = x + 1 := by simp [sub_eq_add_neg, CharTwo.neg_eq, add_comm]
-      have h_apn_one : IsAPN (fun (x : F) => x ^ kasamiExp (n - k)) := by
-        simpa [hnk_eq, kasamiExp] using h_cubic
-      exact (kasami_apn_iff_complement (F := F) hn k (Nat.le_of_lt hkn)).2 h_apn_one
+    exact kasami_is_apn_odd_n_even_k hn k hk hk_even hkn
+      (Nat.sub_pos_of_lt hkn) hn_odd hcop
 
 end KasamiAPN

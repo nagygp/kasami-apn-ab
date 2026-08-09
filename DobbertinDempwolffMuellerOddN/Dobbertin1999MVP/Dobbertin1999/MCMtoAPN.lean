@@ -131,7 +131,7 @@ in characteristic two, this yields `y ∈ {x, x+1}`, i.e. the APN property of
 Corollary 2.  Reuses `KasamiAPN.kasami_collision_forces_equal_u`. -/
 theorem kasami_collision_forces_equal_u {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
-    (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
+    (hk : 0 < k) (hk_odd : Odd k) (hkn : k < n)
     (hn_odd : Odd n) (hcop : Nat.Coprime k n)
     {x y : F}
     (hdiff : (x + 1) ^ (kasamiExp k) + x ^ (kasamiExp k) =
