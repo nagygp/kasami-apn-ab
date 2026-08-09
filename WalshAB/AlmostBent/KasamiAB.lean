@@ -61,9 +61,9 @@ theorem kasami_bijective {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
 /-- Kasami is APN (reformulated using WalshAB.IsAPN). -/
 theorem kasami_is_apn_pred {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
     (k : ℕ) (hk : k ≥ 1) (hcop : Nat.Coprime k n) (hnodd : Odd n)
-    (hn : n ≥ 1) : IsAPN (fun x : F => x ^ d k) := by
+    (hkn : k < n) : IsAPN (fun x : F => x ^ d k) := by
   intro a ha b
-  exact kasami_apn hk hn hcop hnodd hcard a ha b
+  exact kasami_apn hk hkn hcop hnodd hcard a ha b
 
 
 /-- **Kasami AB Theorem**: The Kasami power function `x^d` is Almost Bent.
@@ -73,12 +73,12 @@ Uses the quadratic substitution approach for Walsh divisibility
 (`ab_from_moments`) from Nyberg's theorem. -/
 theorem kasami_is_ab {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
     (k : ℕ) (hk : k ≥ 1) (hcop : Nat.Coprime k n) (hnodd : Odd n)
-    (hn : n ≥ 1) : IsAB hcard (fun x : F => x ^ d k) := by
+    (hn : n ≥ 1) (hkn : k < n) : IsAB hcard (fun x : F => x ^ d k) := by
   apply ab_from_moments hcard _ hnodd hn
   · exact fun a ha => parseval_perm hcard _ (kasami_bijective hcard k hk hcop hnodd hn) a ha
   · exact fun a ha => fourth_moment_apn hcard (d k)
       (kasami_bijective hcard k hk hcop hnodd hn)
-      (kasami_is_apn_pred hcard k hk hcop hnodd hn) a ha
+      (kasami_is_apn_pred hcard k hk hcop hnodd hkn) a ha
   · exact fun a b => KasamiWalshDiv.kasami_walsh_div hcard k hk hcop hnodd hn a b
 
 end KasamiAB
