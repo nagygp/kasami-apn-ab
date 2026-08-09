@@ -1,5 +1,5 @@
 name = "RequestProject"
-defaultTargets = ["RequestProject"]
+defaultTargets = ["RequestProject", "AlmostBent"]
 
 [[require]]
 name = "mathlib"
@@ -9,3 +9,7 @@ rev = "v4.28.0"
 [[lean_lib]]
 name = "RequestProject"
 globs = ["RequestProject.+"]
+
+[[lean_lib]]
+name = "AlmostBent"
+globs = ["AlmostBent.+"]
