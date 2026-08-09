@@ -20,7 +20,7 @@ open Finset Fintype CollisionAnalysis
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
 
 /-- **Kasami APN**: the Kasami power function `x^d` is APN. -/
-theorem kasami_apn {k n : ℕ} (hk : k ≥ 1) (hn : n ≥ 1) (hkn : k < n)
+theorem kasami_apn {k n : ℕ} (hk : k ≥ 1) (hkn : k < n)
     (hcop : Nat.Coprime k n) (hnodd : Odd n)
     (hcard : Fintype.card F = 2 ^ n) :
     ∀ a : F, a ≠ 0 → ∀ b : F,

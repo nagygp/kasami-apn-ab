@@ -1,6 +1,7 @@
 import Dobbertin1999MVP.Dobbertin1999.MCM
 import Dobbertin1999MVP.Dobbertin1999.MCMtoAPN
 import Dobbertin1999MVP.Dobbertin1999.APN
+import Dobbertin1999MVP.AlmostBent.KasamiAB
 
 /-!
 # Dobbertin (1999) — MCM, MCM → APN, APN: standalone MVP entry point
@@ -86,5 +87,9 @@ alias kasami_is_apn := Dobbertin1999.APN.kasami_is_apn
 /-- **Corollary 2** — Kasami power functions are APN (Nyberg solution-count form).
 See `Dobbertin1999.APN.kasami_is_apn_solution_count`. -/
 alias kasami_is_apn_solution_count := Dobbertin1999.APN.kasami_is_apn_solution_count
+
+/-- **APN -> AB** — Almost Bent property follows from APN plus quadratic trick
+when `n` is odd. See `AlmostBent.KasamiAB.kasami_is_ab`. -/
+alias kasami_is_ab := KasamiAB.kasami_is_ab
 
 end Dobbertin1999.Headlines
