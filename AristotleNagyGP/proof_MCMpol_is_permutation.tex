@@ -1,0 +1,790 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\GF}{\mathrm{GF}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\rhs}{R}
+
+\title{The Muller--Cohen--Matthews polynomial is a permutation polynomial\\
+\large A human-readable account of the formalised proof}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We give a complete, human-readable proof of the following statement: for positive
+integers $k<n$ with $\gcd(k,n)=1$ and $k$ odd, the Muller--Cohen--Matthews (MCM)
+polynomial
+\[
+  M_{n,k}(z)\;=\;z\Bigl(\sum_{i=0}^{k-1}z^{2^{i}-1}\Bigr)^{2^{k}+1}
+\]
+is a permutation polynomial of $L=\GF(2^{n})$.  The proof follows Dobbertin's
+route: one first proves the permutation criterion for the generalized Kasami
+polynomials $q_\alpha$, and then transports it to the MCM side through the pair of
+mutually inverse linearized transfer maps $\psi_\beta$, $\varphi_\alpha$
+(Dobbertin's Theorem 4).  Every step below corresponds to a machine-checked Lean
+statement of the accompanying development; the correspondence is tabulated in
+Appendix~\ref{app:lean}.
+\end{abstract}
+
+\tableofcontents
+
+\section{Setting and notation}
+
+Throughout, $n$ and $k$ are positive integers with
+\[
+  k<n,\qquad \gcd(k,n)=1 ,
+\]
+and $L=\GF(2^{n})$ is the field with $2^{n}$ elements, of characteristic two.  We
+write $k'$ for a positive representative of the inverse of $k$ modulo $n$, i.e.
+\[
+  k\,k'\equiv 1 \pmod n ,\qquad 0<k'<n .
+\]
+Since $\gcd(k,n)=1$ such a $k'$ exists, and together with it we fix the Bézout
+quotient $n'\in\mathbb{N}$ determined by
+\begin{equation}\label{eq:bezout}
+  k'k \;=\; n'n+1 .
+\end{equation}
+
+Two standing facts about $L$ are used constantly and without further comment.
+
+\begin{lemma}\label{lem:frob}
+For all $x\in L$ we have $x^{2^{n}}=x$; consequently $x^{2^{r}}$ depends only on
+$r\bmod n$.  Moreover $u\mapsto u^{2^{r}}$ is a field automorphism, so
+$(u+v)^{2^{r}}=u^{2^{r}}+v^{2^{r}}$, and $-1=1$.
+\end{lemma}
+
+\begin{lemma}\label{lem:gcdpow}
+For all $r\ge 1$, $\gcd(2^{r}-1,2^{n}-1)=2^{\gcd(r,n)}-1$ and
+$\gcd(2^{r},2^{n}-1)=1$.  In particular, since $\gcd(k,n)=1$:
+\begin{enumerate}
+\item $u\mapsto u^{2^{k}-1}$ is a bijection of $L^{\times}$;
+\item $u\mapsto u^{2^{k}}$ is a bijection of $L$, and $u^{2^{k}}=1$ forces $u=1$;
+\item the kernel of the additive map $u\mapsto u^{2^{k}}+u$ is
+      $\F_{2^{\gcd(k,n)}}=\{0,1\}$.
+\end{enumerate}
+\end{lemma}
+
+The \emph{absolute trace polynomial} is
+\[
+  \Tr(z)\;=\;\sum_{i=0}^{n-1}z^{2^{i}} ,
+\]
+an additive map $L\to\F_2\subseteq L$ satisfying $\Tr(z)^{2^{r}}=\Tr(z)$ for all
+$r$.
+
+\begin{definition}[Generalized Kasami polynomial]
+For $\alpha\in\{0,1\}$ put
+\[
+  q_\alpha(z)\;=\;\Bigl(\sum_{i=1}^{k'}z^{2^{ik}}+\alpha\Tr(z)\Bigr)\,
+                 z^{(2^{n}-1)-(2^{k}+1)} .
+\]
+\end{definition}
+
+\begin{definition}[Generalized MCM polynomial]
+For $\beta\in\{0,1\}$ put
+\[
+  P_\beta(z)\;=\;\Bigl(\sum_{i=0}^{k-1}z^{2^{i}}+\beta\Tr(z)\Bigr)^{2^{k}+1}
+                 z^{(2^{n}-1)-2^{k}} .
+\]
+\end{definition}
+
+\begin{definition}[MCM polynomial]
+\[
+  M_{n,k}(z)\;=\;z\Bigl(\sum_{i=0}^{k-1}z^{2^{i}-1}\Bigr)^{2^{k}+1}.
+\]
+\end{definition}
+
+In each case we distinguish carefully between the \emph{polynomial} and the
+\emph{evaluation map} $L\to L$ it induces; ``$p$ is a permutation polynomial''
+means that the evaluation map $x\mapsto p(x)$ is a bijection of $L$.  As usual we
+use the convention $0^{-1}=0$, so that $x\mapsto x^{-1}$ is a bijection of $L$
+fixing $0$.
+
+The goal of this note is:
+
+\begin{theorem}[Main theorem]\label{thm:main}
+Let $0<k<n$ with $\gcd(k,n)=1$ and $k$ odd.  Then $M_{n,k}$ is a permutation
+polynomial of $\GF(2^{n})$.
+\end{theorem}
+
+The proof occupies Sections \ref{sec:kasami}--\ref{sec:mcm}: Section
+\ref{sec:kasami} proves the permutation criterion for $q_\alpha$, Section
+\ref{sec:transfer} the transfer theorem relating $q_\alpha$ and $P_\beta$, and
+Section \ref{sec:mcm} deduces Theorem \ref{thm:main}.
+
+\section{The permutation criterion for the generalized Kasami polynomials}
+\label{sec:kasami}
+
+The aim of this section is the following criterion, which is where all the work
+lies.
+
+\begin{theorem}\label{thm:kasami}
+Let $0<k<n$, $\gcd(k,n)=1$, $0<k'<n$ with $kk'\equiv1\pmod n$, and
+$\alpha\in\{0,1\}$.  Then $q_\alpha$ is a permutation polynomial of $\GF(2^{n})$
+if and only if
+\[
+  k'+\alpha n\equiv 1 \pmod 2 .
+\]
+\end{theorem}
+
+Throughout this section we abbreviate
+\[
+  S(z)\;=\;\sum_{i=1}^{k'}z^{2^{ik}},\qquad
+  \rhs(z)\;=\;S(z)+\alpha\Tr(z),
+\]
+so that $q_\alpha(z)=\rhs(z)\,z^{(2^{n}-1)-(2^{k}+1)}$.  Both $S$ and $\rhs$ are
+additive maps $L\to L$.
+
+\subsection{Fibres of $q_\alpha$ as a Kasami equation}
+
+\begin{lemma}\label{lem:fibre}
+Let $c,z\in L$.
+\begin{enumerate}
+\item If $z\neq0$ then $q_\alpha(z)=c$ if and only if
+      \begin{equation}\label{eq:K}
+        c\,z^{2^{k}+1}\;=\;\rhs(z). \tag{K}
+      \end{equation}
+\item $q_\alpha(z)=0$ if and only if $\rhs(z)=0$ (including for $z=0$).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Assume $z\neq0$, so $z^{2^{n}-1}=1$.  Since $k<n$ we have $2^{k}+1\le 2^{n}-1$,
+hence multiplying $q_\alpha(z)=\rhs(z)z^{(2^{n}-1)-(2^{k}+1)}$ by $z^{2^{k}+1}$
+gives $q_\alpha(z)z^{2^{k}+1}=\rhs(z)z^{2^{n}-1}=\rhs(z)$.  As $z^{2^{k}+1}\neq0$,
+$q_\alpha(z)=c$ is equivalent to \eqref{eq:K}.  This proves (1), and (2) for
+$z\neq 0$ (take $c=0$).  For $z=0$ both $q_\alpha(0)$ and $\rhs(0)$ vanish, because
+every exponent occurring in $S$ and $\Tr$ is positive.
+\end{proof}
+
+\subsection{Necessity of the parity condition}
+
+\begin{proposition}\label{prop:necessity}
+If $q_\alpha$ is a permutation polynomial then $k'+\alpha n\equiv1\pmod2$.
+\end{proposition}
+
+\begin{proof}
+Suppose $k'+\alpha n$ is even.  Then
+\[
+  \rhs(1)=\sum_{i=1}^{k'}1+\alpha\sum_{i=0}^{n-1}1=(k'+\alpha n)\cdot 1=0
+\]
+in $L$, because $L$ has characteristic two.  By Lemma \ref{lem:fibre}(2),
+$q_\alpha(1)=0=q_\alpha(0)$, while $1\neq0$ in $L$.  Hence $q_\alpha$ is not
+injective.
+\end{proof}
+
+\subsection{Frobenius identities and the linearized equation}
+
+\begin{lemma}\label{lem:shift}
+For every $x\in L$,
+\[
+  S(x)^{2^{k}}\;=\;S(x)+x^{2^{k}}+x^{2^{k+1}},\qquad
+  \Tr(x)^{2^{k}}=\Tr(x),
+\]
+and consequently $\rhs(x)^{2^{k}}=\rhs(x)+x^{2^{k}}+x^{2^{k+1}}$.
+\end{lemma}
+
+\begin{proof}
+Applying the automorphism $u\mapsto u^{2^{k}}$ termwise,
+$S(x)^{2^{k}}=\sum_{i=1}^{k'}x^{2^{(i+1)k}}=\sum_{i=2}^{k'+1}x^{2^{ik}}$.  Hence,
+in characteristic two,
+\[
+  S(x)^{2^{k}}=S(x)+x^{2^{k}}+x^{2^{(k'+1)k}} .
+\]
+By \eqref{eq:bezout}, $(k'+1)k=k'k+k\equiv 1+k \pmod n$, so by Lemma
+\ref{lem:frob} $x^{2^{(k'+1)k}}=x^{2^{k+1}}$.  The trace identity is the standard
+invariance of $\Tr$ under Frobenius, and the last claim follows since
+$\alpha\in\{0,1\}$ satisfies $\alpha^{2^{k}}=\alpha$.
+\end{proof}
+
+\begin{definition}
+For $c\in L$ let
+\[
+  \ell_c(X)=c^{2^{k}}X^{2^{2k}}+X^{2^{k}}+cX+1,\qquad
+  \ell_{0,c}(X)=\ell_c(X)+1=c^{2^{k}}X^{2^{2k}}+X^{2^{k}}+cX .
+\]
+$\ell_{0,c}$ is $\F_2$-linear, so $\ell_c(x)=\ell_c(y)$ if and only if
+$\ell_{0,c}(x+y)=0$.
+\end{definition}
+
+\begin{proposition}\label{prop:linearized}
+If $x\neq0$ satisfies \eqref{eq:K}, then $\ell_c(x)=0$.
+\end{proposition}
+
+\begin{proof}
+Raise \eqref{eq:K} to the power $2^{k}$ and add \eqref{eq:K} to it.  Using Lemma
+\ref{lem:shift} on the right-hand side,
+\[
+  c^{2^{k}}x^{2^{2k}+2^{k}}+c\,x^{2^{k}+1}
+  \;=\;\rhs(x)^{2^{k}}+\rhs(x)\;=\;x^{2^{k}}+x^{2^{k+1}} .
+\]
+Dividing by $x^{2^{k}}\neq0$ and using $x^{2^{k+1}}/x^{2^{k}}=x^{2^{k}}$ yields
+\[
+  c^{2^{k}}x^{2^{2k}}+c\,x+1+x^{2^{k}}=0,
+\]
+which is $\ell_c(x)=0$.
+\end{proof}
+
+\begin{proposition}\label{prop:zerofibre}
+Assume $k'+\alpha n\equiv 1 \pmod 2$.  If $\rhs(x)=0$ then $x=0$.
+\end{proposition}
+
+\begin{proof}
+From $\rhs(x)=0$ and Lemma \ref{lem:shift},
+$0=\rhs(x)^{2^{k}}+\rhs(x)=x^{2^{k}}+x^{2^{k+1}}=x^{2^{k}}\bigl(1+x^{2^{k}}\bigr)$.
+Hence $x=0$ or $x^{2^{k}}=1$; in the latter case $x=1$ by Lemma
+\ref{lem:gcdpow}(2).  But $\rhs(1)=(k'+\alpha n)\cdot1=1\neq0$ by the parity
+hypothesis.  So $x=0$.
+\end{proof}
+
+\subsection{First case: $c$ is not of the form $\gamma^{2^{k}+1}+\gamma$}
+
+\begin{lemma}[Factorisation]\label{lem:factorization}
+Let $c\neq0$ and $z\in L$.  Put $D=c\,z^{2^{k}-1}$ and $A=D^{2^{n-1}}$, so that
+$A^{2}=D$.  Then
+\[
+  \ell_{0,c}(z)\;=\;c^{-1}\bigl(A^{2^{k}+1}+A+c\bigr)^{2}\,z .
+\]
+\end{lemma}
+
+\begin{proof}
+Squaring is additive, so
+$\bigl(A^{2^{k}+1}+A+c\bigr)^{2}=A^{2(2^{k}+1)}+A^{2}+c^{2}
+ =D^{2^{k}+1}+D+c^{2}$.  Now
+\[
+  c^{-1}zD^{2^{k}+1}=c^{-1}z\,c^{2^{k}+1}z^{(2^{k}-1)(2^{k}+1)}
+   =c^{2^{k}}z^{2^{2k}},\qquad
+  c^{-1}zD=c^{-1}z\,c\,z^{2^{k}-1}=z^{2^{k}},
+\]
+and $c^{-1}zc^{2}=cz$.  Adding the three contributions gives exactly
+$\ell_{0,c}(z)$.  (We used $A^{2}=D^{2^{n}}=D$, which holds by Lemma
+\ref{lem:frob}.)
+\end{proof}
+
+\begin{proposition}\label{prop:case1}
+Suppose there is \emph{no} $\gamma\in L$ with $c=\gamma^{2^{k}+1}+\gamma$.  Then
+$\ell_c$ has at most one root in $L$.
+\end{proposition}
+
+\begin{proof}
+First, $c\neq0$: otherwise $\gamma=0$ would do.  Let $x,y$ be roots of $\ell_c$
+and set $z=x+y$, so $\ell_{0,c}(z)=0$ by linearity.  If $z\neq0$, Lemma
+\ref{lem:factorization} forces $A^{2^{k}+1}+A+c=0$, i.e.
+$c=A^{2^{k}+1}+A$ (characteristic two), contradicting the hypothesis.  Hence
+$z=0$, i.e. $x=y$.
+\end{proof}
+
+\subsection{Second case: $c=\gamma^{2^{k}+1}+\gamma$}
+
+Assume now $c=\gamma^{2^{k}+1}+\gamma$ and $c\neq0$; then $\gamma\neq0$ and, since
+$c=\gamma(\gamma^{2^{k}}+1)$, also $\gamma^{2^{k}}\neq1$, i.e. $\gamma\neq1$.
+Introduce
+\[
+  Q(X)\;=\;c\,X^{2^{k}}+\gamma^{2}X+\gamma .
+\]
+
+\subsubsection{The auxiliary element $\Delta$}
+
+\begin{lemma}\label{lem:delta}
+There is a $\Delta\in L^{\times}$ with
+\begin{equation}\label{eq:deltadef}
+  \bigl(\Delta^{2^{k}-1}\bigr)^{-1}\;=\;\gamma^{2^{k}-1}+\gamma^{-1},
+\end{equation}
+and any such $\Delta$ satisfies
+\begin{equation}\label{eq:deltafrob}
+  \Delta^{2^{k}}\;=\;\gamma\Delta+(\gamma\Delta)^{2^{k}} .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+We have $\gamma^{2^{k}-1}+\gamma^{-1}=\gamma^{-1}(\gamma^{2^{k}}+1)\neq0$ because
+$\gamma\ne 1$.  By Lemma \ref{lem:gcdpow}(1) the map $u\mapsto u^{2^{k}-1}$ is a
+bijection of $L^{\times}$, so \eqref{eq:deltadef} has a solution
+$\Delta\in L^{\times}$.  Rewriting \eqref{eq:deltadef} as
+$\Delta^{2^{k}-1}\gamma^{-1}(\gamma^{2^{k}}+1)=1$ and multiplying by
+$\gamma\Delta$ gives $\Delta^{2^{k}}(\gamma^{2^{k}}+1)=\gamma\Delta$, which is
+\eqref{eq:deltafrob}.
+\end{proof}
+
+\begin{lemma}\label{lem:tracedelta}
+$\Tr(\Delta)=0$.
+\end{lemma}
+
+\begin{proof}
+Apply $\Tr$ to \eqref{eq:deltafrob}.  Since $\Tr$ is additive and
+Frobenius-invariant, $\Tr(\Delta^{2^{k}})=\Tr(\Delta)$ and
+$\Tr\bigl((\gamma\Delta)^{2^{k}}\bigr)=\Tr(\gamma\Delta)$, so
+$\Tr(\Delta)=\Tr(\gamma\Delta)+\Tr(\gamma\Delta)=0$.
+\end{proof}
+
+\subsubsection{Factorisation of the zero set of $\ell_c$ through $Q$}
+
+\begin{proposition}\label{prop:ellQ}
+For all $x\in L$,
+\[
+  \ell_c(x)\;=\;Q(x)^{2^{k}}+\bigl(\Delta^{2^{k}-1}\bigr)^{-1}Q(x),
+\]
+and therefore
+\begin{equation}\label{eq:F}
+  \ell_c(x)=0\iff Q(x)=0\ \text{ or }\ Q(x)=\Delta^{-1}. \tag{F}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Write $\lambda=\bigl(\Delta^{2^{k}-1}\bigr)^{-1}=\gamma^{2^{k}-1}+\gamma^{-1}$.
+Expanding,
+\[
+  Q(x)^{2^{k}}=c^{2^{k}}x^{2^{2k}}+\gamma^{2^{k+1}}x^{2^{k}}+\gamma^{2^{k}},
+  \qquad
+  \lambda Q(x)=\lambda c\,x^{2^{k}}+\lambda\gamma^{2}x+\lambda\gamma .
+\]
+Now $\lambda\gamma^{2}=\gamma^{2^{k}+1}+\gamma=c$ and
+$\lambda\gamma=\gamma^{2^{k}}+1$, whence the constant terms add up to
+$\gamma^{2^{k}}+\gamma^{2^{k}}+1=1$ and the coefficient of $x$ is $c$.  Finally
+\[
+  \lambda c=(\gamma^{2^{k}-1}+\gamma^{-1})(\gamma^{2^{k}+1}+\gamma)
+  =\gamma^{2^{k+1}}+\gamma^{2^{k}}+\gamma^{2^{k}}+1=\gamma^{2^{k+1}}+1 ,
+\]
+so the coefficient of $x^{2^{k}}$ is $\gamma^{2^{k+1}}+\gamma^{2^{k+1}}+1=1$.
+Altogether $Q(x)^{2^{k}}+\lambda Q(x)=c^{2^{k}}x^{2^{2k}}+x^{2^{k}}+cx+1=\ell_c(x)$.
+
+For \eqref{eq:F}: $\ell_c(x)=0$ means $Q(x)\bigl(Q(x)^{2^{k}-1}+\lambda\bigr)=0$,
+i.e. $Q(x)=0$ or $Q(x)^{2^{k}-1}=\lambda=(\Delta^{-1})^{2^{k}-1}$.  By Lemma
+\ref{lem:gcdpow}(1) the latter is equivalent to $Q(x)=\Delta^{-1}$.
+\end{proof}
+
+\subsubsection{Roots of $Q$ do not solve the Kasami equation}
+
+\begin{lemma}\label{lem:Qroot}
+Let $x$ be a root of $Q$.  Then
+\begin{enumerate}
+\item $x^{2^{k}}=\gamma x+(\gamma x)^{2^{k}}+1$, and more generally for all
+      $i\ge0$
+      \[
+        x^{2^{(i+1)k}}=(\gamma x)^{2^{ik}}+(\gamma x)^{2^{(i+1)k}}+1 ;
+      \]
+\item $\Tr(x)=n\cdot 1$ (i.e. $\Tr(x)=n\bmod 2$ in $\F_2\subseteq L$);
+\item $S(x)=\gamma x+(\gamma x)^{2}+k'\cdot1$;
+\item $c\,x^{2^{k}+1}=\gamma x+(\gamma x)^{2}$.
+\end{enumerate}
+Consequently
+\begin{equation}\label{eq:efinal}
+  c\,x^{2^{k}+1}+S(x)+\alpha\Tr(x)\;=\;(k'+\alpha n)\cdot 1 .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+(1) $Q(x)=0$ reads $(\gamma^{2^{k}+1}+\gamma)x^{2^{k}}+\gamma^{2}x+\gamma=0$;
+dividing by $\gamma\neq0$ gives
+$(\gamma^{2^{k}}+1)x^{2^{k}}+\gamma x+1=0$, i.e.
+$x^{2^{k}}=(\gamma x)^{2^{k}}+\gamma x+1$.  The general form follows by applying
+the automorphism $u\mapsto u^{2^{ik}}$ (note $1^{2^{ik}}=1$).
+
+(2) Apply $u\mapsto u^{2^{j}}$ to the case $i=0$ of (1) and sum over
+$j=0,\dots,n-1$.  The left-hand side gives $\sum_{j}x^{2^{k+j}}=\Tr(x)$ by Lemma
+\ref{lem:frob}; the right-hand side gives
+$\Tr(\gamma x)+\Tr(\gamma x)+n\cdot1=n\cdot1$.
+
+(3) Summing the identity of (1) for $i=0,\dots,k'-1$, the middle terms telescope:
+\[
+  S(x)=\sum_{i=0}^{k'-1}x^{2^{(i+1)k}}
+      =\gamma x+(\gamma x)^{2^{k'k}}+k'\cdot 1 .
+\]
+By \eqref{eq:bezout}, $k'k\equiv1\pmod n$, so $(\gamma x)^{2^{k'k}}=(\gamma x)^{2}$.
+
+(4) Multiply $x^{2^{k}}=(\gamma x)^{2^{k}}+\gamma x+1$ by $x$:
+$x^{2^{k}+1}(1+\gamma^{2^{k}})=\gamma x^{2}+x$.  Multiplying by $\gamma$ and using
+$c=\gamma(\gamma^{2^{k}}+1)$ gives
+$c\,x^{2^{k}+1}=\gamma^{2}x^{2}+\gamma x=(\gamma x)^{2}+\gamma x$.
+
+Finally, adding (3), (4) and $\alpha$ times (2), the terms $\gamma x$ and
+$(\gamma x)^{2}$ cancel in characteristic two and \eqref{eq:efinal} results.
+\end{proof}
+
+\begin{proposition}\label{prop:noQzero}
+Assume $k'+\alpha n\equiv1\pmod2$.  Then no root of $Q$ satisfies \eqref{eq:K}.
+\end{proposition}
+
+\begin{proof}
+If $x$ satisfies \eqref{eq:K} then $c\,x^{2^{k}+1}+S(x)+\alpha\Tr(x)=0$, whereas
+if $Q(x)=0$ then by \eqref{eq:efinal} this same quantity equals
+$(k'+\alpha n)\cdot1=1$.  Since $1\neq0$ in $L$, the two are incompatible.
+\end{proof}
+
+\subsubsection{Uniqueness inside the fibre $Q(x)=\Delta^{-1}$}
+
+\begin{lemma}\label{lem:pairsum}
+Let $x_0\neq x_1$ satisfy $Q(x_0)=Q(x_1)=\Delta^{-1}$.  Then
+\[
+  x_0+x_1=\Delta,\qquad \Tr(x_0)=\Tr(x_1),\qquad S(x_0)+S(x_1)=\gamma\Delta+(\gamma\Delta)^{2}.
+\]
+\end{lemma}
+
+\begin{proof}
+We first rewrite the fibre condition.  Dividing $Q(x)=\Delta^{-1}$, i.e.
+$c\,x^{2^{k}}+\gamma^{2}x+\gamma=\Delta^{-1}$, by $\gamma^{2}\Delta$ and using
+\[
+  \frac{c}{\gamma^{2}\Delta}=\frac{\gamma^{2^{k}}+1}{\gamma\Delta}
+  =\frac{1}{\Delta^{2^{k}}}
+\]
+(the last equality being \eqref{eq:deltafrob} in the form
+$\Delta^{2^{k}}(\gamma^{2^{k}}+1)=\gamma\Delta$), we find that
+$Q(x)=\Delta^{-1}$ is equivalent to
+\[
+  u+u^{2^{k}}=(\gamma\Delta)^{-1}+\bigl((\gamma\Delta)^{2}\bigr)^{-1},
+  \qquad u=x/\Delta .
+\]
+Thus $u_0=x_0/\Delta$ and $u_1=x_1/\Delta$ have the same image under the additive
+map $u\mapsto u^{2^{k}}+u$, whose kernel is $\{0,1\}$ by Lemma
+\ref{lem:gcdpow}(3).  So $u_0=u_1$ or $u_0=u_1+1$; as $x_0\neq x_1$ the second
+holds, i.e. $x_0+x_1=\Delta$.
+
+By Lemma \ref{lem:tracedelta} and additivity, $\Tr(x_0)+\Tr(x_1)=\Tr(\Delta)=0$.
+
+For the last identity, additivity of $S$ gives $S(x_0)+S(x_1)=S(\Delta)$.  Applying
+$u\mapsto u^{2^{ik}}$ to \eqref{eq:deltafrob} yields
+$\Delta^{2^{(i+1)k}}=(\gamma\Delta)^{2^{ik}}+(\gamma\Delta)^{2^{(i+1)k}}$, and
+summing over $i=0,\dots,k'-1$ telescopes to
+\[
+  S(\Delta)=\gamma\Delta+(\gamma\Delta)^{2^{k'k}}=\gamma\Delta+(\gamma\Delta)^{2},
+\]
+using $k'k\equiv1\pmod n$ once more.  (In contrast with Lemma \ref{lem:Qroot}(3)
+there is no constant term here, since \eqref{eq:deltafrob} is homogeneous.)
+\end{proof}
+
+For $x\in L$ set
+\[
+  e(x)\;=\;c\,x^{2^{k}+1}+S(x)+\alpha\Tr(x),
+\]
+so that, by Lemma \ref{lem:fibre}, $x$ solves \eqref{eq:K} exactly when $e(x)=0$.
+
+\begin{proposition}\label{prop:e0e1}
+Let $x_0\neq x_1$ satisfy $Q(x_0)=Q(x_1)=\Delta^{-1}$.  Then
+$e(x_0)+e(x_1)=1$.
+\end{proposition}
+
+\begin{proof}
+By Lemma \ref{lem:pairsum} we may write $x_1=x_0+\Delta$, and
+\[
+  e(x_0)+e(x_1)=c\bigl(x_0^{2^{k}+1}+x_1^{2^{k}+1}\bigr)+\gamma\Delta+(\gamma\Delta)^{2}.
+\]
+Expanding $x_1^{2^{k}+1}=(x_0+\Delta)^{2^{k}}(x_0+\Delta)$ in characteristic two,
+\[
+  x_0^{2^{k}+1}+x_1^{2^{k}+1}
+   =\Delta\,x_0^{2^{k}}+\Delta^{2^{k}}x_0+\Delta^{2^{k}+1}
+   =\Delta\,x_0^{2^{k}}+\Delta^{2^{k}}\bigl(x_0+\Delta\bigr).
+\]
+From $Q(x_0)=\Delta^{-1}$ we get $c\,x_0^{2^{k}}=\Delta^{-1}+\gamma^{2}x_0+\gamma$,
+hence
+\[
+  c\,\Delta\,x_0^{2^{k}}=1+\gamma^{2}\Delta x_0+\gamma\Delta .
+\]
+From \eqref{eq:deltafrob}, $\Delta^{2^{k}}(\gamma^{2^{k}}+1)=\gamma\Delta$, and
+since $c=\gamma(\gamma^{2^{k}}+1)$ this gives
+$c\,\Delta^{2^{k}}=\gamma\cdot\gamma\Delta=\gamma^{2}\Delta$.  Therefore
+\[
+  c\bigl(x_0^{2^{k}+1}+x_1^{2^{k}+1}\bigr)
+  =1+\gamma^{2}\Delta x_0+\gamma\Delta+\gamma^{2}\Delta\bigl(x_0+\Delta\bigr)
+  =1+\gamma\Delta+(\gamma\Delta)^{2},
+\]
+and adding $\gamma\Delta+(\gamma\Delta)^{2}$ leaves $e(x_0)+e(x_1)=1$.
+\end{proof}
+
+\begin{proposition}\label{prop:case2}
+Assume $k'+\alpha n\equiv1\pmod2$ and $c=\gamma^{2^{k}+1}+\gamma$ for some
+$\gamma\in L$.  Then \eqref{eq:K} has at most one nonzero solution.
+\end{proposition}
+
+\begin{proof}
+If $c=0$ then \eqref{eq:K} reads $\rhs(x)=0$, and Proposition
+\ref{prop:zerofibre} gives $x=0$; so there is no nonzero solution at all.
+Assume $c\ne 0$; then $\gamma\notin\{0,1\}$ as observed above, and $\Delta$ is
+available.  Let $x_0\neq x_1$ be nonzero solutions of \eqref{eq:K}.  By
+Proposition \ref{prop:linearized} both are roots of $\ell_c$, so by \eqref{eq:F}
+each satisfies $Q(x_j)=0$ or $Q(x_j)=\Delta^{-1}$.  Proposition
+\ref{prop:noQzero} excludes the first alternative, so
+$Q(x_0)=Q(x_1)=\Delta^{-1}$.  Proposition \ref{prop:e0e1} then gives
+$e(x_0)+e(x_1)=1$, contradicting $e(x_0)=e(x_1)=0$.
+\end{proof}
+
+\subsection{Proof of Theorem \ref{thm:kasami}}
+
+\begin{proposition}\label{prop:unique}
+Assume $k'+\alpha n\equiv1\pmod2$.  Let $c,x,y\in L$ satisfy \eqref{eq:K} for $x$
+and for $y$, and suppose that $x\neq0$ and $y\neq0$ whenever $c\neq0$.  Then
+$x=y$.
+\end{proposition}
+
+\begin{proof}
+If $c=0$, then $\rhs(x)=\rhs(y)=0$ and Proposition \ref{prop:zerofibre} gives
+$x=y=0$.  Let $c\neq0$, so $x,y\neq0$.  If $c$ is not of the form
+$\gamma^{2^{k}+1}+\gamma$, then by Proposition \ref{prop:linearized} both $x$ and
+$y$ are roots of $\ell_c$, and Proposition \ref{prop:case1} gives $x=y$.  If $c$
+is of that form, Proposition \ref{prop:case2} gives $x=y$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:kasami}]
+Necessity is Proposition \ref{prop:necessity}.  For sufficiency assume
+$k'+\alpha n\equiv1\pmod2$ and let $q_\alpha(x)=q_\alpha(y)=:c$.
+
+If $c=0$ then by Lemma \ref{lem:fibre}(2) $\rhs(x)=\rhs(y)=0$, so $x=y=0$ by
+Proposition \ref{prop:zerofibre}.  If $c\neq0$ then $x\neq0\neq y$ (as
+$q_\alpha(0)=0$), and by Lemma \ref{lem:fibre}(1) both satisfy \eqref{eq:K};
+Proposition \ref{prop:unique} yields $x=y$.  Hence the evaluation map of
+$q_\alpha$ is injective, and since $L$ is finite it is bijective.  Thus
+$q_\alpha$ is a permutation polynomial.
+\end{proof}
+
+\section{The transfer theorem}\label{sec:transfer}
+
+We now relate $q_\alpha$ and $P_\beta$ through two linearized maps.  Fix
+$k',n'$ as in \eqref{eq:bezout} and $\alpha,\beta\in\{0,1\}$, and define
+$L\to L$ by
+\[
+  \psi_\beta(x)=\sum_{i=0}^{k-1}x^{2^{i}}+\beta\Tr(x),
+  \qquad
+  \varphi_\alpha(x)=\sum_{i=0}^{k'-1}x^{2^{ik}}+\alpha\Tr(x) .
+\]
+Both are $\F_2$-linear.
+
+\begin{lemma}\label{lem:Rphi}
+For all $x\in L$, $\rhs(x)=\varphi_\alpha(x)^{2^{k}}$.
+\end{lemma}
+
+\begin{proof}
+$\bigl(\sum_{i=0}^{k'-1}x^{2^{ik}}\bigr)^{2^{k}}=\sum_{i=1}^{k'}x^{2^{ik}}=S(x)$
+and $\Tr(x)^{2^{k}}=\Tr(x)$, while $\alpha^{2^{k}}=\alpha$.
+\end{proof}
+
+\begin{lemma}\label{lem:Pdiv}
+For $x\neq0$, $P_\beta(x)=\psi_\beta(x)^{2^{k}+1}\big/x^{2^{k}}$.
+\end{lemma}
+
+\begin{proof}
+$P_\beta(x)=\psi_\beta(x)^{2^{k}+1}x^{(2^{n}-1)-2^{k}}$ by definition (note
+$2^{k}\le 2^{n}-1$ since $k<n$), and $x^{(2^{n}-1)-2^{k}}=x^{2^{n}-1}x^{-2^{k}}
+=x^{-2^{k}}$.
+\end{proof}
+
+\begin{proposition}\label{prop:transferinv}
+Assume \eqref{eq:bezout}, $k'+\alpha n\equiv 1\pmod2$ and
+$\beta\equiv n'+\alpha k\pmod 2$.  Then $\varphi_\alpha\circ\psi_\beta=\mathrm{id}_L$;
+consequently $\psi_\beta$ and $\varphi_\alpha$ are mutually inverse bijections of $L$.
+\end{proposition}
+
+\begin{proof}
+Fix $x$ and abbreviate $T=\Tr(x)$.  First,
+\[
+  \sum_{i=0}^{k'-1}\Bigl(\sum_{j=0}^{k-1}x^{2^{j}}\Bigr)^{2^{ik}}
+  =\sum_{i=0}^{k'-1}\sum_{j=0}^{k-1}x^{2^{ik+j}}
+  =\sum_{m=0}^{k'k-1}x^{2^{m}}
+  =\sum_{m=0}^{n'n}x^{2^{m}}
+  =x+n'\,T ,
+\]
+where the last step splits the range $\{0,\dots,n'n\}$ into the singleton
+$\{n'n\}$ contributing $x^{2^{n'n}}=x$ (Lemma \ref{lem:frob}) and $n'$ blocks of
+$n$ consecutive exponents, each contributing $T$.  Second,
+$\bigl(\beta T\bigr)^{2^{ik}}=\beta T$, so the $\beta$-part of
+$\varphi_\alpha(\psi_\beta(x))$ contributes $k'\beta T$.  Third,
+\[
+  \alpha\Tr\bigl(\psi_\beta(x)\bigr)
+  =\alpha\Bigl(\sum_{j=0}^{n-1}\sum_{i=0}^{k-1}x^{2^{i+j}}+\beta\sum_{j=0}^{n-1}T\Bigr)
+  =\alpha\,(k+\beta n)\,T .
+\]
+Altogether
+\[
+  \varphi_\alpha\bigl(\psi_\beta(x)\bigr)=x+\bigl(n'+\beta k'+\alpha k+\alpha\beta n\bigr)T ,
+\]
+and the integer coefficient is to be read modulo $2$.  Using
+$\beta\equiv n'+\alpha k$ and $k'+\alpha n\equiv1$,
+\[
+  n'+\beta k'+\alpha k+\alpha\beta n=(n'+\alpha k)+\beta(k'+\alpha n)
+  \equiv\beta+\beta\equiv0 \pmod 2 .
+\]
+Hence $\varphi_\alpha\circ\psi_\beta=\mathrm{id}$.  Since $L$ is finite, both maps
+are bijections and each is the inverse of the other.
+\end{proof}
+
+\begin{theorem}[Transfer theorem; Dobbertin, Thm.~4]\label{thm:transfer}
+Assume $0<k<n$, $\gcd(k,n)=1$, $0<k'<n$, \eqref{eq:bezout},
+$k'+\alpha n\equiv1\pmod2$ and $\beta\equiv n'+\alpha k\pmod2$.  Then
+\begin{enumerate}
+\item $\psi_\beta$ and $\varphi_\alpha$ are mutually inverse bijections of $L$;
+\item $q_\alpha\circ\psi_\beta=(\,\cdot\,)^{-1}\circ P_\beta$ and
+      $P_\beta\circ\varphi_\alpha=(\,\cdot\,)^{-1}\circ q_\alpha$;
+\item $q_\alpha$ and $P_\beta$ are both permutation polynomials of $L$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) is Proposition \ref{prop:transferinv}.
+
+(2) Let $x\in L$.  If $x=0$ then $\psi_\beta(0)=0$, and $q_\alpha(0)=0=P_\beta(0)^{-1}$
+(recall $0^{-1}=0$), so the first identity holds.  Let $x\neq0$ and put
+$y=\psi_\beta(x)$; then $y\neq0$, since $\varphi_\alpha(y)=x\neq0=\varphi_\alpha(0)$.
+By Lemma \ref{lem:fibre}(1) applied to $c=q_\alpha(y)$, and by Lemma
+\ref{lem:Rphi},
+\[
+  q_\alpha(y)\,y^{2^{k}+1}=\rhs(y)=\varphi_\alpha(y)^{2^{k}}=x^{2^{k}} .
+\]
+By Lemma \ref{lem:Pdiv}, $P_\beta(x)=y^{2^{k}+1}/x^{2^{k}}\neq0$, so
+$q_\alpha(y)\,P_\beta(x)=1$, i.e. $q_\alpha(\psi_\beta(x))=P_\beta(x)^{-1}$.  The
+second identity follows by substituting $x\mapsto\varphi_\alpha(x)$ and using
+$\psi_\beta\circ\varphi_\alpha=\mathrm{id}$.
+
+(3) $q_\alpha$ is a permutation polynomial by Theorem \ref{thm:kasami}, the parity
+hypothesis being satisfied.  Hence $(\,\cdot\,)^{-1}\circ q_\alpha$ is a bijection
+of $L$, so by (2) $P_\beta\circ\varphi_\alpha$ is a bijection; since
+$\varphi_\alpha$ is a bijection, so is $P_\beta$.
+\end{proof}
+
+\section{The MCM polynomial}\label{sec:mcm}
+
+\begin{lemma}\label{lem:mcmid}
+For $0<k<n$, the polynomials $M_{n,k}$ and $P_0$ induce the same evaluation map on
+$L$.
+\end{lemma}
+
+\begin{proof}
+At $x=0$ both vanish: $M_{n,k}(0)=0$ because of the factor $z$, and
+$P_0(0)=0$ because $\sum_{i=0}^{k-1}0^{2^{i}}=0$ (all exponents $2^{i}$ are
+positive) and $k\ge1$.
+
+Let $x\neq0$, so $x^{2^{n}-1}=1$.  Since $2^{i}-1\ge0$,
+\[
+  \sum_{i=0}^{k-1}x^{2^{i}}=x\sum_{i=0}^{k-1}x^{2^{i}-1}=:x\,\Sigma .
+\]
+Therefore, using $2^{k}\le2^{n}-1$,
+\[
+  P_0(x)=\bigl(x\Sigma\bigr)^{2^{k}+1}x^{(2^{n}-1)-2^{k}}
+        =\Sigma^{2^{k}+1}\,x^{2^{k}+1+(2^{n}-1)-2^{k}}
+        =\Sigma^{2^{k}+1}\,x\,x^{2^{n}-1}
+        =x\,\Sigma^{2^{k}+1}=M_{n,k}(x). \qedhere
+\]
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:main}]
+Let $0<k<n$, $\gcd(k,n)=1$ and $k$ odd.  Choose $k'$ with $0<k'<n$ and
+$kk'\equiv1\pmod n$, and let $n'$ be as in \eqref{eq:bezout}, i.e.
+$k'k=n'n+1$.  Apply Theorem \ref{thm:transfer} with
+\[
+  \alpha\equiv n' \pmod 2,\qquad \beta=0 .
+\]
+Its two parity hypotheses hold:
+\begin{itemize}
+\item Reducing \eqref{eq:bezout} modulo $2$ and using that $k$ is odd gives
+      $k'\equiv k'k\equiv n'n+1\pmod2$; hence
+      \[
+        k'+\alpha n\equiv (n'n+1)+n'n\equiv1 \pmod 2 .
+      \]
+\item $\beta=0$ and, again since $k$ is odd,
+      $n'+\alpha k\equiv n'+n'k=n'(1+k)\equiv0\pmod 2$, so
+      $\beta\equiv n'+\alpha k \pmod 2$.
+\end{itemize}
+Theorem \ref{thm:transfer}(3) therefore shows that $P_0$ is a permutation
+polynomial of $L$, and by Lemma \ref{lem:mcmid} the evaluation map of $M_{n,k}$
+coincides with that of $P_0$.  Hence $M_{n,k}$ is a permutation polynomial of
+$\GF(2^{n})$.
+\end{proof}
+
+\begin{remark}
+The hypothesis that $k$ is odd is used exactly twice, namely in the two parity
+verifications above; it is what makes the choice $\beta=0$ (the ``classical'' MCM
+polynomial, without trace term) compatible with the permutation parity
+$k'+\alpha n\equiv1$ of the Kasami side.
+\end{remark}
+
+\appendix
+
+\section{Correspondence with the formal development}\label{app:lean}
+
+Every statement of this note corresponds to a machine-checked declaration of the
+accompanying Lean development (namespace \texttt{GeneralizedKasami}).  In the Lean
+files the field is \texttt{GF n}, the parameters $\alpha,\beta$ are elements of
+\texttt{Fin 2} named \texttt{a}, \texttt{b}, and $k'$, $n'$, $\Delta$ are
+\texttt{kInv}, \texttt{nPrime}, \texttt{Delta}.
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Here & Lean declaration & File\\
+\hline
+$\Tr$ & \texttt{tracePolynomial} & \texttt{basic.lean}\\
+$q_\alpha$, its evaluation & \texttt{genKasamiPol}, \texttt{genKasamiEval} & \texttt{basic.lean}\\
+$\rhs$ & \texttt{equationRHS} & \texttt{basic.lean}\\
+$\ell_c$, $\ell_{0,c}$ & \texttt{ell}, \texttt{ell\_0} & \texttt{basic.lean}\\
+$Q$, $c=\gamma^{2^{k}+1}+\gamma$ & \texttt{gammaPolynomial}, \texttt{gammaCoefficient} & \texttt{GammaSteps.lean}\\
+$S$ & \texttt{iteratedKasamiSum} & \texttt{GammaSteps.lean}\\
+$\Delta$ & \texttt{IsDelta} & \texttt{DeltaSteps.lean}\\
+$e(x)$ & \texttt{eTerm} & \texttt{PairSteps.lean}\\
+$P_\beta$, $\psi_\beta$, $\varphi_\alpha$ & \texttt{genMCMpol}, \texttt{psi\_beta}, \texttt{phi\_alpha} & \texttt{genMCM.lean}\\
+$M_{n,k}$ & \texttt{MCMpolynomial}, \texttt{MCMeval} & \texttt{MCMCorollary.lean}\\
+\hline
+Lemma \ref{lem:frob} & \texttt{gf\_frobenius\_pow\_card}, \texttt{gf\_frobenius\_mod} & \texttt{basic.lean}\\
+Lemma \ref{lem:fibre} & \texttt{evaluation\_eq\_iff\_equation\_of\_ne\_zero}, & \texttt{basic.lean}\\
+ & \texttt{evaluation\_eq\_zero\_iff\_equation} & \\
+Prop. \ref{prop:necessity} & \texttt{permutation\_implies\_parity} & \texttt{basic.lean}\\
+Lemma \ref{lem:shift} & \texttt{kasami\_sum\_frobenius}, \texttt{trace\_sum\_frobenius} & \texttt{basic.lean}\\
+Prop. \ref{prop:linearized} & \texttt{kasamiEquation\_implies\_linearized} & \texttt{basic.lean}\\
+Prop. \ref{prop:zerofibre} & \texttt{equationRHS\_eq\_zero\_unique} & \texttt{basic.lean}\\
+Lemma \ref{lem:factorization} & \texttt{ell\_0\_eval\_factorization} & \texttt{basic.lean}\\
+Prop. \ref{prop:case1} & \texttt{linearized\_unique\_of\_not\_exists\_gamma} & \texttt{basic.lean}\\
+Lemma \ref{lem:delta} & \texttt{exists\_delta}, \texttt{delta\_frobenius\_identity} & \texttt{DeltaSteps.lean}\\
+Lemma \ref{lem:tracedelta} & \texttt{trace\_sum\_delta\_eq\_zero} & \texttt{DeltaSteps.lean}\\
+Prop. \ref{prop:ellQ} & \texttt{ell\_eval\_eq\_gammaPolynomial\_frobenius}, & \texttt{EllSteps.lean}\\
+ & \texttt{ell\_eval\_eq\_zero\_iff\_gammaPolynomial} & \\
+Lemma \ref{lem:Qroot} & \texttt{gammaPolynomial\_eq\_zero\_iff(\_iterate)}, & \texttt{GammaSteps.lean}\\
+ & \texttt{trace\_sum\_of\_gammaPolynomial\_root}, & \\
+ & \texttt{iteratedKasamiSum\_of\_gammaPolynomial\_root}, & \\
+ & \texttt{gammaPolynomial\_root\_final\_identity} & \\
+Prop. \ref{prop:noQzero} & \texttt{kasamiEquation\_not\_gammaPolynomial\_zero} & \texttt{genkasamipol.lean}\\
+Lemma \ref{lem:pairsum} & \texttt{gammaPolynomial\_eq\_delta\_inv\_iff}, & \texttt{DeltaSteps.lean}\\
+ & \texttt{frobenius\_add\_eq\_frobenius\_add\_iff}, & \\
+ & \texttt{pair\_sum\_eq\_delta}, \texttt{pair\_trace\_eq}, & \texttt{PairSteps.lean}\\
+ & \texttt{iteratedKasamiSum\_delta} & \\
+Prop. \ref{prop:e0e1} & \texttt{e0\_plus\_e1\_equals\_one} & \texttt{PairSteps.lean}\\
+Prop. \ref{prop:case2} & \texttt{kasamiEquation\_unique\_of\_exists\_gamma} & \texttt{genkasamipol.lean}\\
+Prop. \ref{prop:unique} & \texttt{kasamiEquation\_unique} & \texttt{genkasamipol.lean}\\
+Theorem \ref{thm:kasami} & \texttt{parity\_implies\_permutation}, & \texttt{genkasamipol.lean}\\
+ & \texttt{generalizedKasami\_isPermutation\_iff} & \\
+Lemma \ref{lem:Rphi} & \texttt{equationRHS\_eq\_phi\_pow} & \texttt{genMCM.lean}\\
+Lemma \ref{lem:Pdiv} & \texttt{genMCMeval\_eq\_div} & \texttt{genMCM.lean}\\
+Prop. \ref{prop:transferinv} & \texttt{transfer\_maps\_inverse} & \texttt{genMCM.lean}\\
+Theorem \ref{thm:transfer} & \texttt{dobbertin\_theorem4} & \texttt{genMCM.lean}\\
+Lemma \ref{lem:mcmid} & \texttt{MCMeval\_eq\_genMCMeval\_zero} & \texttt{MCMCorollary.lean}\\
+Theorem \ref{thm:main} & \texttt{MCMpolynomial\_isPermutation} & \texttt{MCMCorollary.lean}\\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent
+The Bézout data \eqref{eq:bezout} is produced in Lean by
+\texttt{exists\_positive\_inverse\_coefficients}
+(\texttt{MCMCorollary.lean}).  The formal statement of Theorem \ref{thm:main} is
+\begin{verbatim}
+theorem MCMpolynomial_isPermutation
+    (n k : Nat) (hn : 0 < n) (hk : 0 < k) (hkn : k < n)
+    (hcop : Nat.Coprime k n) (hkodd : Odd k) :
+    IsPermutationPolynomial (MCMpolynomial n k)
+\end{verbatim}
+(the natural-number type is written \texttt{Nat} here for typesetting reasons),
+where \texttt{IsPermutationPolynomial p} unfolds to \texttt{Function.Bijective p.eval}.
+
+\end{document}

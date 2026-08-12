@@ -1,3 +1,33 @@
+# Summary of changes for run a793658f-ea4b-4bb3-93cf-80b321c7294e
+I added `proof_MCMpol_is_permutation.tex`, a self-contained, human-readable LaTeX proof that the Muller–Cohen–Matthews polynomial
+
+  M_{n,k}(z) = z · (∑_{i<k} z^(2^i − 1))^(2^k + 1)
+
+is a permutation polynomial of GF(2^n) whenever 0 < k < n, gcd(k,n) = 1 and k is odd. The document mirrors, step by step, the structure of the machine-checked proof recorded in `depgraph_MCM.md`.
+
+Contents of the document:
+- **Setting**: the field GF(2^n), the inverse k′ of k mod n with the Bézout identity k′k = n′n + 1, the absolute trace, and the three polynomials involved (generalized Kasami q_α, generalized MCM P_β, and the MCM polynomial), with the polynomial/evaluation-map distinction made explicit.
+- **Section 2 — the permutation criterion for q_α** (q_α is a permutation polynomial iff k′ + αn is odd): reduction of fibres to the Kasami equation c·z^(2^k+1) = R(z); necessity of the parity condition; the Frobenius endpoint-shift and trace identities; the reduction to Dobbertin's affine linearized polynomial ℓ_c; uniqueness of the zero fibre; the case split on whether c = γ^(2^k+1) + γ, with the explicit factorization of ℓ_{0,c} in the first case, and in the second case the auxiliary element Δ, the factorization ℓ_c = Q^(2^k) + (Δ^(2^k−1))⁻¹·Q, exclusion of the branch Q(x) = 0 by the parity identity, and the pair computation e(x₀) + e(x₁) = 1 that rules out two solutions in the branch Q(x) = Δ⁻¹.
+- **Section 3 — the transfer theorem** (Dobbertin's Theorem 4): the linearized maps ψ_β, φ_α, the computation showing φ_α ∘ ψ_β = id under the two parity conditions, the identities R = φ_α(·)^(2^k) and P_β(x) = ψ_β(x)^(2^k+1)/x^(2^k), and the resulting conjugations q_α ∘ ψ_β = (·)⁻¹ ∘ P_β and P_β ∘ φ_α = (·)⁻¹ ∘ q_α, which transfer the permutation property.
+- **Section 4 — the MCM corollary**: identification of the evaluation maps of M_{n,k} and P_0, the verification (using oddness of k) that α ≡ n′, β = 0 satisfy both parity conditions, and the conclusion.
+- **Appendix**: a table matching each definition, lemma, proposition and theorem of the write-up with the corresponding Lean declaration and file, plus the formal statement of the main theorem.
+
+The file compiles cleanly to PDF. No Lean sources were changed; `ARISTOTLE_SUMMARY.md` was read only. The new LaTeX file is committed and pushed (the generated PDF is left in the working directory but is excluded by the repository's ignore rules).
+
+
+# Summary of changes for run 855bb256-81c2-4df4-bf27-749b50540b9e
+I read the existing development and produced `depgraph_MCM.md` in the project root: a dependency graph of the proof of `MCMpolynomial_isPermutation` (in `RequestProject/MCMCorollary.lean`).
+
+How the graph was obtained: rather than reading the sources by eye, I extracted, for every declaration reachable from the main theorem, the constants that actually occur in its elaborated statement and proof term, restricted them to this project's declarations, and spliced out the compiler-generated auxiliary declarations (replacing them by their own dependencies). Every edge in the document therefore corresponds to a dependency present in the kernel-checked proof, and every project declaration the theorem relies on appears.
+
+Contents of `depgraph_MCM.md`:
+- a table of the 19 definitions the statements are phrased in terms of (`MCMpolynomial`, `genMCMpol`, `genKasamiPol`, `psi_beta`, `phi_alpha`, `gammaPolynomial`, `IsDelta`, `ell`, …), with file and meaning;
+- Mermaid diagrams for the top-level structure (Bézout inverse → Dobbertin's Theorem 4 → identification of the MCM polynomial with the generalized MCM polynomial at β = 0), the transfer branch in `genMCM.lean`, the permutation branch in `genkasamipol.lean`/`basic.lean`, and the case `c = γ^(2^k+1)+γ` (Steps 6–12);
+- a complete edge list: 46 lemmas/theorems with their file and direct proof dependencies, so leaves and shared hubs (e.g. `trace_sum_frobenius`, `gf_frobenius_mod`, `gf_frobenius_pow_card`) are explicit;
+- a file-level dependency order diagram.
+
+I also re-verified the underlying facts stated in the document: the project builds, contains no `sorry`/`admit`, and `MCMpolynomial_isPermutation` depends only on `propext`, `Classical.choice`, `Quot.sound`. `ARISTOTLE_SUMMARY.md` was read but not modified, and no Lean sources were changed. The new file is committed and pushed.
+
 # Summary of changes for run 3c8867ed-c662-476e-bb01-f31d2c5bf57c
 I formalized and fully proved that the Kasami power function x ↦ x^(4^k − 2^k + 1) on GF(2^n) is **Almost Bent (AB)** when n is odd, k ≥ 1, k < n, and gcd(k,n) = 1, following the approach in the attached paper (kasami-is-AB.pdf).
 
