@@ -1,0 +1,203 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\MCM}{\operatorname{MCM}}
+\newcommand{\Kas}{\operatorname{Kas}}
+
+\title{The Generalized MCM Polynomial Is a Permutation Polynomial}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Statement}
+
+Let $F=\F_{2^n}$, and let $0<k<n$.  For $b\in\F_2$, define
+\[
+  \psi_b(x)=\sum_{i=0}^{k-1}x^{2^i}+b\Tr(x)
+\]
+and define the generalized Muller--Cohen--Matthews polynomial by
+\[
+  \MCM_b(X)=
+  \left(\sum_{i=0}^{k-1}X^{2^i}+b\Tr(X)\right)^{2^k+1}
+  X^{(2^n-1)-2^k}.
+\]
+Here $\Tr(x)=\sum_{i=0}^{n-1}x^{2^i}$ is the absolute trace of $F$ over
+$\F_2$.  This is the polynomial called \texttt{genMCMpol} (with arguments
+$n$, $k$, and $b$) in the Lean development.
+
+\begin{theorem}
+\label{thm:mcm-permutation}
+Suppose that $\gcd(k,n)=1$ and that $k$ is odd.  Then $\MCM_0$ induces a
+permutation of $F$.
+\end{theorem}
+
+The proof is the $b=0$ specialization of the transfer theorem formalized as
+\verb|dobbertin_theorem4|.  We state precisely the part of that theorem used
+below and then verify its arithmetic hypotheses.
+
+\section{The transfer theorem}
+
+For positive integers $k,n$ with $\gcd(k,n)=1$, choose integers
+$k^{-1}$ and $n'$ satisfying
+\begin{equation}
+\label{eq:bezout-positive}
+  0<k^{-1}<n,
+  \qquad
+  k^{-1}k=n'n+1.
+\end{equation}
+For $a\in\F_2$, put
+\[
+  \phi_a(x)=\sum_{i=0}^{k^{-1}-1}x^{2^{ik}}+a\Tr(x).
+\]
+
+\begin{lemma}[Kasami parity criterion]
+\label{lem:kasami-parity}
+Assume \eqref{eq:bezout-positive} and
+\begin{equation}
+\label{eq:kasami-parity}
+  k^{-1}+an\equiv1\pmod2.
+\end{equation}
+Then the generalized Kasami polynomial $\Kas_a$ is a permutation polynomial
+of $F$.
+\end{lemma}
+
+\begin{proof}[Proof idea]
+The formal lemma \verb|parity_implies_permutation| proves that the evaluation
+map of $\Kas_a$ is injective and then uses finiteness of $F$ to obtain
+surjectivity.  Its injectivity argument translates equality of two values of
+$\Kas_a$ into two instances of the associated Kasami equation
+\[
+  c z^{2^k+1}=R_a(z),
+\]
+where $R_a$ is the equation's right-hand side.  The zero and nonzero input
+cases are treated separately so that the required nonzero admissibility
+condition is retained when $c\ne0$.
+
+The key uniqueness lemma splits into three cases.  If $c=0$, a separate
+zero-right-hand-side result gives the unique solution.  If $c\ne0$ and
+$c=\gamma^{2^k+1}+\gamma$ for some $\gamma$, the odd parity
+\eqref{eq:kasami-parity} excludes a solution in the zero fiber of the
+auxiliary gamma polynomial.  The remaining fiber is controlled by the
+Delta and Ell identities; two distinct solutions would force both a parity
+identity $e_0+e_1=1$ and the vanishing of the corresponding $e$-terms, a
+contradiction.  Finally, when no such $\gamma$ exists, uniqueness follows
+from the linearized equation.  Thus every admissible Kasami-equation fiber
+has at most one solution, proving injectivity of $\Kas_a$.
+\end{proof}
+
+\begin{theorem}[Dobbertin transfer theorem]
+\label{thm:transfer}
+Assume \eqref{eq:bezout-positive}, and suppose that $a,b\in\F_2$ satisfy
+\begin{align}
+\label{eq:q-parity}
+  k^{-1}+an &\equiv 1 \pmod 2,\\
+\label{eq:beta-parity}
+  b &\equiv n'+ak \pmod 2.
+\end{align}
+Then $\psi_b$ and $\phi_a$ are inverse permutations of $F$.  Moreover, if
+$\Kas_a$ denotes the associated generalized Kasami polynomial, then
+\begin{align*}
+  \Kas_a\circ\psi_b &= \iota\circ\MCM_b,\\
+  \MCM_b\circ\phi_a &= \iota\circ\Kas_a,
+\end{align*}
+where $\iota(x)=x^{-1}$, with $\iota(0)=0$.  If the parity condition
+\eqref{eq:q-parity} holds, then Lemma \ref{lem:kasami-parity} shows that
+$\Kas_a$ is a permutation polynomial;
+consequently, $\MCM_b$ is a permutation polynomial.
+\end{theorem}
+
+For context, the formal proof of this transfer theorem has two main inputs.
+First, Frobenius periodicity $x^{2^n}=x$ and trace invariance show that
+$\psi_b$ and $\phi_a$ are mutual inverses under
+\eqref{eq:q-parity}--\eqref{eq:beta-parity}.  Second, the parity condition
+makes the generalized Kasami polynomial a permutation by the fiber-uniqueness
+argument in Lemma \ref{lem:kasami-parity}.  The second displayed functional
+identity then makes $\MCM_b\circ\phi_a$ a composition of permutations.
+Since $\phi_a$ is itself a permutation, $\MCM_b$ is a permutation as well.
+
+\section{Proof of Theorem \ref{thm:mcm-permutation}}
+
+Because $\gcd(k,n)=1$, $k$ has a multiplicative inverse modulo $n$.  Choose
+$k^{-1}$ with
+\[
+  0<k^{-1}<n,
+  \qquad
+  k^{-1}k\equiv1\pmod n.
+\]
+Set
+\[
+  n'=\frac{k^{-1}k}{n}.
+\]
+The modular-inverse congruence says that $k^{-1}k$ has remainder $1$ upon
+division by $n$, so the division algorithm gives
+\begin{equation}
+\label{eq:product}
+  k^{-1}k=n'n+1.
+\end{equation}
+Thus the first set of hypotheses of Theorem \ref{thm:transfer} is satisfied.
+
+Choose $a\in\F_2$ to be the parity of $n'$; equivalently,
+\begin{equation}
+\label{eq:a-parity}
+  a\equiv n'\pmod2.
+\end{equation}
+Since $k$ is odd,
+\begin{equation}
+\label{eq:k-odd}
+  k\equiv1\pmod2.
+\end{equation}
+We verify the two parity relations required by the transfer theorem.
+
+Multiplying \eqref{eq:k-odd} by $k^{-1}$ and using \eqref{eq:product}
+yields
+\[
+  k^{-1}\equiv k^{-1}k\equiv n'n+1\pmod2.
+\]
+Together with \eqref{eq:a-parity}, this gives
+\[
+  k^{-1}+an
+  \equiv (n'n+1)+n'n
+  =2n'n+1
+  \equiv1\pmod2.
+\]
+Hence \eqref{eq:q-parity} holds.
+
+For the second relation, \eqref{eq:a-parity} and \eqref{eq:k-odd} imply
+\[
+  ak\equiv n'k\equiv n'\pmod2.
+\]
+Therefore
+\[
+  n'+ak\equiv n'+n'\equiv0\pmod2.
+\]
+This is exactly \eqref{eq:beta-parity} with $b=0$.
+
+All hypotheses of Theorem \ref{thm:transfer} now hold for the data
+$(n,k,k^{-1},n',a,b=0)$.  Its conclusion states that $\MCM_0$ is a
+permutation polynomial of $F$, which proves Theorem \ref{thm:mcm-permutation}.
+\qed
+
+\section{Formalization Correspondence}
+
+The construction of $k^{-1}$ is
+\verb|Nat.exists_mul_mod_eq_one_of_coprime|.  The quotient $n'$ is
+\verb|nPrime|, equation \eqref{eq:product} is \verb|hprod|, and the element
+$a$ is the Lean value \verb|a : Fin 2|.  The two parity calculations are
+\verb|hqpar| and \verb|hbeta|.  Lemma \ref{lem:kasami-parity} corresponds to
+\verb|parity_implies_permutation|: it uses \verb|kasamiEquation_unique| to
+prove injectivity and \verb|Finite.injective_iff_surjective| to conclude
+bijectivity.  Finally, the formal theorem invokes
+\verb|dobbertin_theorem4| with $b=0$ and selects its final conclusion,
+\verb|IsPermutationPolynomial (genMCMpol n k 0)|.
+
+\end{document}
