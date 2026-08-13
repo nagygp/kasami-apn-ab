@@ -72,9 +72,9 @@ namespace Dobbertin1999.Headlines
 `Dobbertin1999.MCM.mcm_permutation`. -/
 alias mcm_permutation := Dobbertin1999.MCM.mcm_permutation
 
-/-- **MCM permutation theorem, `k'`-transfer form** — the shape consumed by the
-APN chain.  See `Dobbertin1999.MCM.mcm_permutation_ktransfer`. -/
-alias mcm_permutation_ktransfer := Dobbertin1999.MCM.mcm_permutation_ktransfer
+/-- **Dempwolff–Mueller permutation theorem, `k'`-transfer form** — the shape consumed by the
+APN chain.  See `Dobbertin1999.MCM.dempwolff_mueller_permutation_ktransfer`. -/
+alias mcm_permutation_ktransfer := Dobbertin1999.MCM.dempwolff_mueller_permutation_ktransfer
 
 /-- **The key identity** linking the Kasami derivative to the Gold exponent.  See
 `Dobbertin1999.MCMtoAPN.kasami_key_identity`. -/

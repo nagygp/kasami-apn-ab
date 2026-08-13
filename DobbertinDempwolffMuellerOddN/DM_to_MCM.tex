@@ -1,0 +1,136 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\MCM}{\operatorname{MCMpol}}
+\newcommand{\Trunc}{L}
+
+\title{From Dempwolff--M\"uller to the MCM Permutation Polynomial}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{The MCM Polynomial}
+
+Let $F=\F_{2^n}$ and define the truncated trace
+\[
+  \Trunc_m(x)=\sum_{i=0}^{m-1}x^{2^i}.
+\]
+The M\"uller--Cohen--Matthews polynomial formalized in the project is
+\[
+  \MCM_{n,m}(x)=\Trunc_m(x)^{2^m+1}x^{(2^n-1)-2^m}.
+\]
+For $x\ne0$, this is the quotient
+\[
+  \MCM_{n,m}(x)=\frac{\Trunc_m(x)^{2^m+1}}{x^{2^m}},
+\]
+because $x^{2^n-1}=1$.  The polynomial form gives the intended value at zero.
+
+\begin{theorem}[MCM permutation theorem]
+Assume $0<m<n$, $m$ and $n$ are odd, and $\gcd(m,n)=1$.  Then
+$\MCM_{n,m}$ is a permutation of $F$.
+\end{theorem}
+
+This is the Lean theorem \texttt{Dobbertin1999.MCM.mcm\_permutation}.
+
+\section{Two Permutation Inputs}
+
+The proof combines a Dempwolff--M\"uller permutation with a Gold permutation.
+
+\subsection{Dempwolff--M\"uller transfer}
+
+For $1<m<n$, $m$ odd, and $\gcd(m,n)=1$, let $k'$ satisfy
+\[
+  (2^{n-1}-2^{m-1}-1)k'\equiv2^{m-1}\pmod{2^n-1}.
+  \tag{DM}
+\]
+Then
+\[
+  D_{k'}(x)=\Trunc_m(x)x^{k'}
+\]
+is a permutation of $F$.  In Lean this is
+\texttt{dempwolff\_mueller\_permutation\_ktransfer}, which reuses
+\texttt{DempwolffMueller.LxXk'\_bijective}.
+
+\subsection{Gold}
+
+Under the oddness and coprimality hypotheses, the Gold map
+\[
+  G(y)=y^{2^m+1}
+\]
+is a permutation of $F$.  This is \texttt{gold\_permutation}, reusing
+\texttt{KasamiAPN.gold\_pow\_bijective}.
+
+\section{The Linking Exponent}
+
+The key arithmetic lemma \texttt{KasamiAPN.exists\_linking\_exp} supplies an
+exponent $k'$ satisfying both \textup{(DM)} and
+\[
+  k'(2^m+1)\equiv(2^n-1)-2^m\pmod{2^n-1}.
+  \tag{MCM}
+\]
+The second congruence gives, for every $x\in F$,
+\[
+  x^{(2^n-1)-2^m}=x^{k'(2^m+1)}.
+\]
+It follows that
+\begin{align*}
+  \MCM_{n,m}(x)
+    &=\Trunc_m(x)^{2^m+1}x^{k'(2^m+1)}\\
+    &=\bigl(\Trunc_m(x)x^{k'}\bigr)^{2^m+1}\\
+    &=G(D_{k'}(x)).
+\end{align*}
+The equality, including the zero case, is formalized as
+\texttt{MCM\_eq\_dempwolff\_mueller\_pow}.
+
+\section{Proof When $m>1$}
+
+Choose $k'$ from the linking-exponent lemma.  By \textup{(DM)}, $D_{k'}$ is
+bijective.  The Gold theorem makes $G$ bijective.  Since
+\[
+  \MCM_{n,m}=G\circ D_{k'},
+\]
+the MCM polynomial is bijective as a composition of bijections.  The final Lean
+step uses \texttt{Function.Bijective.comp} after rewriting the function by the
+factorization theorem.
+
+\section{The Case $m=1$}
+
+The transfer theorem requires $1<m$, but the MCM polynomial is already the
+identity for $m=1$.  Indeed, $\Trunc_1(x)=x$, and
+\begin{align*}
+  \MCM_{n,1}(x)
+    &=x^{2^1+1}x^{(2^n-1)-2}\\
+    &=x^{2^n}\\
+    &=x.
+\end{align*}
+The last equality is the finite-field Frobenius identity.  The Lean proof uses
+\texttt{FiniteField.pow\_card} and concludes with
+\texttt{Function.bijective\_id}.
+
+\section{Formal Dependency Summary}
+
+\[
+\begin{array}{rcl}
+\texttt{mcm\_permutation}
+  &\longleftarrow& \texttt{MCMpol},\ \texttt{MCM\_eq\_dempwolff\_mueller\_pow},\\
+  && \texttt{KasamiAPN.exists\_linking\_exp},\\
+  && \texttt{dempwolff\_mueller\_permutation\_ktransfer},\ \texttt{gold\_permutation};\\[3pt]
+\texttt{dempwolff\_mueller\_permutation\_ktransfer}
+  &\longleftarrow& \texttt{DempwolffMueller.LxXk'\_bijective};\\[3pt]
+\texttt{gold\_permutation}
+  &\longleftarrow& \texttt{KasamiAPN.gold\_pow\_bijective};\\[3pt]
+\texttt{MCM\_eq\_dempwolff\_mueller\_pow}
+  &\longleftarrow& \texttt{FiniteField.pow\_card\_sub\_one\_eq\_one}.
+\end{array}
+\]
+
+\end{document}

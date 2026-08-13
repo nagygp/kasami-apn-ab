@@ -8,7 +8,7 @@ The sources imported modules under a `Dobbertin1999MVP.*` prefix, but the files 
 - Updated `lakefile.toml` (`defaultTargets`/`lean_lib` = `Dobbertin1999MVP`).
 
 `lake build` now succeeds (whole project), and all five headline results are `sorry`-free, resting only on `propext`, `Classical.choice`, `Quot.sound`:
-`mcm_permutation`, `mcm_permutation_ktransfer`, `kasami_key_identity`, `kasami_is_apn`, `kasami_is_apn_solution_count`.
+`mcm_permutation`, `dempwolff_mueller_permutation_ktransfer`, `kasami_key_identity`, `kasami_is_apn`, `kasami_is_apn_solution_count`.
 
 ### 2. Redundancy analysis
 I computed the exact transitive dependency closure of the five headline theorems and cross-checked it against every declaration in the project. This showed which lemmas actually contribute and which are dead weight.

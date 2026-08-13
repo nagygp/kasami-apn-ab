@@ -8,7 +8,7 @@ import Dobbertin1999MVP.Dobbertin1999.MCM
 This module is the **MCM → APN** part of the transcription of Dobbertin (1999),
 *"Kasami Power Functions, Permutation Polynomials and Cyclic Difference Sets"*.
 It records the bridge, used in the proof of **Corollary 2**, from the
-Müller–Cohen–Matthews permutation theorem (`Dobbertin1999.MCM`) to the
+Dempwolff-Müller permutation theorem (`Dobbertin1999.MCM`) to the
 almost-perfect-nonlinearity of the Kasami power map.  Everything is proved by
 *reusing* the project's Kasami development (`Dobbertin1999MVP/Core/KasamiAPN.lean`);
 nothing is left as `sorry`.
@@ -29,11 +29,13 @@ power function `x ↦ x^d` is APN by the chain:
 2. **Gold permutation.**  The map `y ↦ y^{2^k + 1}` is a bijection of `𝔽_{2ⁿ}`
    when `gcd(k, n) = 1` and `n` is odd (`gcd(2^k+1, 2ⁿ−1) = 1`).
 
-3. **MCM permutation.**  With `q = qα` chosen a permutation polynomial
-   (Theorem 1 / the MCM engine `Dobbertin1999.MCM.mcm_permutation_ktransfer`),
+3. **Dempwolff-Müller permutation.**  With `q = qα` chosen a permutation polynomial
+  (Theorem 1 / the Dempwolff-Müller engine
+  `Dobbertin1999.MCM.dempwolff_mueller_permutation_ktransfer`),
    one has `p(t) = 1/q(t^{2^k} + t)`, and the composite
 
-   > (MCM permutation `L_k(·)·(·)^{k'}`) ∘ (Gold permutation `y^{2^k+1}`)
+  > (Dempwolff-Müller permutation `L_k(·)·(·)^{k'}`) ∘
+  > (Gold permutation `y^{2^k+1}`)
 
    is a bijection.  Feeding the key identity through this bijection shows the
    Kasami derivative is injective on the fibres of `u ↦ u^2 + u`.
@@ -48,8 +50,8 @@ power function `x ↦ x^d` is APN by the chain:
 * `truncTrace_artin_schreier` — `L_k(x² + x) = x^{2^k} + x`.
 * `kasami_key_identity` — the identity `(key)` above.
 * `gold_permutation` — `y ↦ y^{2^k+1}` is a bijection (the Gold step).
-* `mcm_injective_bridge` — the composite MCM ∘ Gold injectivity that transports
-  the MCM permutation property to the Kasami derivative.
+* `mcm_injective_bridge` — the composite Dempwolff-Müller ∘ Gold injectivity that
+  transports the Dempwolff-Müller permutation property to the Kasami derivative.
 * `kasami_collision_forces_equal_u` — a Kasami derivative collision forces
   `x² + x = y² + y`, the heart of the MCM → APN reduction.
 -/
@@ -88,28 +90,17 @@ theorem kasami_key_identity {F : Type*} [Field F] [Fintype F] [CharP F 2]
     (x ^ (2 ^ k) + x) ^ (2 ^ k + 1) :=
   KasamiAPN.kasami_key_identity hn k hk hkn x
 
-/-- **The Gold permutation.**
-
-`y ↦ y^{2^k + 1}` is a bijection of `𝔽_{2ⁿ}` when `0 < k`, `n` is odd and
-`gcd(k, n) = 1` (equivalently `gcd(2^k + 1, 2ⁿ − 1) = 1`).  This is the second
-factor of the MCM ∘ Gold composite.  Reuses `KasamiAPN.gold_pow_bijective`. -/
-theorem gold_permutation {F : Type*} [Field F] [Fintype F] [CharP F 2]
-    {n : ℕ} (hn : Fintype.card F = 2 ^ n)
-    (k : ℕ) (hk : 0 < k) (hn_pos : 0 < n)
-    (hcop : Nat.Coprime k n) (hn_odd : Odd n) :
-    Function.Bijective (fun y : F => y ^ (2 ^ k + 1)) :=
-  KasamiAPN.gold_pow_bijective hn k hk hn_pos hcop hn_odd
-
 /-- **MCM ∘ Gold injectivity bridge.**
 
 The core transport step: on nonzero `u, v`, the equality
 ```
    L_k(u)^{2^k+1} · v^{2^k}  =  L_k(v)^{2^k+1} · u^{2^k}
 ```
-forces `u = v`.  This is exactly where the MCM permutation theorem
+forces `u = v`.  This is exactly where the Dempwolff-Müller permutation theorem
 (`Dobbertin1999.MCM`) enters: writing the left-hand map as the composite of the
-Gold permutation `y ↦ y^{2^k+1}` with the MCM permutation `x ↦ L_k(x)·x^{k'}`
-(both bijective), injectivity follows.  Reuses `KasamiAPN.phi_injective_on_units`. -/
+Gold permutation `y ↦ y^{2^k+1}` with the Dempwolff-Müller permutation
+`x ↦ L_k(x)·x^{k'}` (both bijective), injectivity follows.  Reuses
+`KasamiAPN.phi_injective_on_units`. -/
 theorem mcm_injective_bridge {F : Type*} [Field F] [Fintype F] [CharP F 2]
     {n : ℕ} (hn : Fintype.card F = 2 ^ n) (k : ℕ)
     (hk : 1 < k) (hk_odd : Odd k) (hkn : k < n)
