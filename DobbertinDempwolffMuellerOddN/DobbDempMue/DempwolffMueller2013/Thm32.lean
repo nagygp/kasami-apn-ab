@@ -2,7 +2,7 @@ import Mathlib
 import DobbDempMue.FiniteField.TraceNorm
 import DobbDempMue.FiniteField.ExpArith
 import DobbDempMue.FiniteField.FrobAlg
-import DobbDempMue.FiniteField.AdjointBij
+import DobbDempMue.DempwolffMueller2013.AdjointBij
 
 /-!
 # Theorem 3.2 — Dempwolff & Müller
@@ -57,9 +57,9 @@ L(x)² + L(x) = x^{2^m} + x
 lemma truncTrace_sq_add_self {F : Type*} [CommSemiring F] [CharP F 2]
     (m : ℕ) (x : F) :
     truncTrace m x ^ 2 + truncTrace m x = x ^ (2 ^ m) + x := by
-  unfold truncTrace; induction m <;> simp_all +decide [ Finset.sum_range_succ, pow_succ ] ; ring;
+  unfold truncTrace; induction m <;> simp_all +decide [ Finset.sum_range_succ, pow_succ ] ; ring_nf;
   · rw [ mul_two, CharTwo.add_self_eq_zero ];
-  · simp_all +decide [ add_mul, mul_add, pow_mul ] ; ring;
+  · simp_all +decide [ add_mul, mul_add, pow_mul ] ; ring_nf;
     simp_all +decide [ ← add_assoc, ← two_mul, CharTwo.two_eq_zero ];
     simp_all +decide [ add_comm, add_left_comm, add_assoc, sq ];
     simp_all +decide [ ← add_assoc, ← two_mul, CharTwo.two_eq_zero ]
@@ -158,10 +158,10 @@ lemma dicksonF_functional {F : Type*} [Field F] [CharP F 2]
     rw [ Finset.sum_eq_zero ] <;> simp +decide [ Nat.sub_eq_zero_iff_le ];
     exact fun x hx => pow_le_pow_right₀ ( by decide ) ( by linarith );
   · refine' mul_left_cancel₀ h _;
-    convert h_simp using 1 ; ring;
-    rw [ show 2 ^ m * 2 - 1 = ( 2 ^ m - 1 ) * 2 + 1 by zify ; norm_num ; ring ] ; norm_num [ pow_add, pow_mul, hz ] ; ring;
-    simp +decide [ hz, pow_mul', add_pow_char_pow ] ; ring;
-    simp +decide [ show 2 ^ m * 2 = ( 2 ^ m - 1 ) * 2 + 2 by zify ; norm_num ; ring, pow_add, pow_mul', hz ] ; ring;
+    convert h_simp using 1 ; ring_nf;
+    rw [ show 2 ^ m * 2 - 1 = ( 2 ^ m - 1 ) * 2 + 1 by zify ; norm_num ; ring ] ; norm_num [ pow_add, pow_mul, hz ] ; ring_nf;
+    simp +decide [ hz, pow_mul', add_pow_char_pow ] ; ring_nf;
+    simp +decide [ show 2 ^ m * 2 = ( 2 ^ m - 1 ) * 2 + 2 by zify ; norm_num ; ring, pow_add, pow_mul', hz ] ; ring_nf;
     rw [ show ( 2 : F ) = 0 by exact CharP.cast_eq_zero F 2 ] ; ring;
 
 /-
@@ -204,7 +204,7 @@ lemma frob_2n_eq_self_of_quad_root {K : Type*} [Field K] [CharP K 2]
     {n : ℕ} {a z : K} (hz : z ^ 2 + a * z + 1 = 0) (ha : a ^ (2 ^ n) = a) :
     z ^ (2 ^ (2 * n)) = z := by
   have hz_pow : (z ^ (2 ^ n)) ^ 2 + a * (z ^ (2 ^ n)) + 1 = 0 := by
-    convert congr_arg ( · ^ 2 ^ n ) hz using 1 <;> ring;
+    convert congr_arg ( · ^ 2 ^ n ) hz using 1 <;> ring_nf;
     simp +decide [ add_pow_char_pow, mul_pow, ha ] ; ring;
   have hz_cases : z ^ (2 ^ n) = z ∨ z ^ (2 ^ n) = a + z := by
     grind +ring;
@@ -324,9 +324,9 @@ lemma LxXk_injective_on_units {F : Type*} [Field F] [Fintype F] [CharP F 2]
     · exact Or.inl ( inv_eq_of_mul_eq_one_left h_exp.2 );
   have h_dickson : dicksonF m x⁻¹ = dicksonF m y⁻¹ := by
     convert h_sq using 1;
-    · convert truncTrace_sq_mul_inv_eq_dicksonF m ( inv_ne_zero hx ) |> Eq.symm using 1 ; simp +decide [ hx, hy, pow_add, pow_mul ] ; ring;
+    · convert truncTrace_sq_mul_inv_eq_dicksonF m ( inv_ne_zero hx ) |> Eq.symm using 1 ; simp +decide [ hx, hy, pow_add, pow_mul ] ; ring_nf;
       group;
-      rw [ ← zpow_add₀ hx ] ; ring ; norm_num;
+      rw [ ← zpow_add₀ hx ] ; ring_nf ; norm_num;
     · convert truncTrace_sq_mul_inv_eq_dicksonF m ( inv_ne_zero hy ) using 1 ; simp +decide [ zpow_neg, zpow_ofNat ];
       · convert truncTrace_sq_mul_inv_eq_dicksonF m ( inv_ne_zero hy ) |> Eq.symm using 1 ; simp +decide [ zpow_neg, zpow_ofNat ];
       · convert truncTrace_sq_mul_inv_eq_dicksonF m ( inv_ne_zero hy ) using 1 ; simp +decide [ zpow_neg, zpow_ofNat ];

@@ -79,7 +79,7 @@ theorem quadratic_gauss_sum_div {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
       χ (Q u + Q 0) * ∑ y : F, χ (Q (u + y) + Q u + Q y + Q 0) := by
     intro u; rw [Finset.mul_sum _ _ _]
     refine Finset.sum_congr rfl fun y _ => ?_
-    simp +decide [χ_mul]; ring; simp +decide [χ_sq]
+    simp +decide [χ_mul]; ring_nf; simp +decide [χ_sq]
   -- B(u,·) is additive ⟹ |F| divides its character sum
   have h_div : ∀ u : F, (Fintype.card F : ℤ) ∣
       ∑ y : F, χ (Q (u + y) + Q u + Q y + Q 0) := by

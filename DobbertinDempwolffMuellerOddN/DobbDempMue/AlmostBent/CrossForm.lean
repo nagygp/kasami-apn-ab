@@ -69,13 +69,13 @@ theorem d_coprime_card_sub_one {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
   · have := Nat.gcd_dvd_right 6 n; simp_all +decide [ ← even_iff_two_dvd, parity_simps ] ;
     exact absurd this ( by simpa using hnodd );
   · have := Nat.gcd_dvd_right ( 2 ^ ( 2 * k ) - 2 ^ k + 1 ) ( 2 ^ n - 1 ) ; simp_all +decide [ Nat.dvd_prime ] ;
-    cases h_div <;> simp_all +decide [ Nat.dvd_prime ];
+    cases h_div <;> simp_all +decide [ ];
     · assumption;
-    · have := Nat.gcd_dvd_left ( 2 ^ ( 2 * k ) - 2 ^ k + 1 ) ( 2 ^ n - 1 ) ; simp_all +decide [ Nat.dvd_prime ] ;
+    · have := Nat.gcd_dvd_left ( 2 ^ ( 2 * k ) - 2 ^ k + 1 ) ( 2 ^ n - 1 ) ; simp_all +decide [ ] ;
       rw [ ← Nat.mod_add_div ( 2 ^ ( 2 * k ) ) 7, ← Nat.mod_add_div ( 2 ^ k ) 7 ] at this; norm_num [ Nat.pow_add, Nat.pow_mul, Nat.mul_mod, Nat.pow_mod ] at this;
       rw [ ← Nat.mod_add_div k 6 ] at this; norm_num [ Nat.pow_add, Nat.pow_mul, Nat.mul_mod, Nat.pow_mod ] at this; have := Nat.mod_lt k ( by decide : 6 > 0 ) ; interval_cases k % 6 <;> norm_num at *;
       all_goals omega;
-  · have := Nat.gcd_dvd_right 6 n; simp_all +decide [ Nat.dvd_prime ] ;
+  · have := Nat.gcd_dvd_right 6 n; simp_all +decide [ ] ;
     exact absurd ( hnodd.of_dvd_nat this ) ( by decide )
 
 /-

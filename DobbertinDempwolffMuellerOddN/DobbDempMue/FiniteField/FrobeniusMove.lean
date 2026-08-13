@@ -1,5 +1,5 @@
 import Mathlib
-import DobbDempMue.Core.KasamiDefs
+import DobbDempMue.FiniteField.KasamiDefs
 import DobbDempMue.FiniteField.FrobAlg
 
 /-!

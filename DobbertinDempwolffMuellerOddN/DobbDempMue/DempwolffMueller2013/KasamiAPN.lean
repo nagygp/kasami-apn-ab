@@ -1,6 +1,6 @@
 import Mathlib
-import DobbDempMue.Core.KasamiDefs
-import DobbDempMue.Core.FrobeniusMove
+import DobbDempMue.FiniteField.KasamiDefs
+import DobbDempMue.FiniteField.FrobeniusMove
 import DobbDempMue.DempwolffMueller2013.Thm32
 import DobbDempMue.FiniteField.ExpArith
 import DobbDempMue.FiniteField.FrobAlg
@@ -42,7 +42,7 @@ lemma truncTrace_artin_schreier {F : Type*} [CommRing F] [CharP F 2]
   induction' k with k ih generalizing x <;> simp_all +decide [ truncTrace, pow_succ, pow_mul ];
   · rw [ ← two_smul F x, CharTwo.two_eq_zero, zero_smul ];
   · rw [ Finset.sum_range_succ, ih ];
-    rw [ add_pow_char_pow, mul_pow ] ; ring;
+    rw [ add_pow_char_pow, mul_pow ] ; ring_nf;
     simp +decide [ show ( 2 : F ) = 0 by exact CharP.cast_eq_zero F 2 ]
 
 /-
@@ -74,7 +74,7 @@ lemma kasami_key_identity {F : Type*} [Field F] [Fintype F] [CharP F 2]
     · grind;
     · simp_all +decide [ add_pow_char_pow, mul_pow, mul_assoc, mul_comm, mul_left_comm, div_eq_mul_inv ];
       field_simp [hx, hx']
-      ring;
+      ring_nf;
       simp_all +decide [ show ( 2 : F ) = 0 by exact CharP.cast_eq_zero F 2 ];
   · by_cases hx : x ^ 2 ^ k = 0 <;> simp_all +decide [ pow_succ, mul_assoc ];
     · exact ne_of_gt ( Nat.sub_pos_of_lt ( one_lt_pow₀ one_lt_two hk.ne' ) );
@@ -97,7 +97,7 @@ lemma gold_coprime {k n : ℕ} (hk : 0 < k) (hn : 0 < n)
     Nat.Coprime (2 ^ k + 1) (2 ^ n - 1) := by
   -- Since $2^k + 1$ divides $2^{2k} - 1$, we have $\gcd(2^k + 1, 2^n - 1) \mid \gcd(2^{2k} - 1, 2^n - 1)$.
   have h_divides : Nat.gcd (2 ^ k + 1) (2 ^ n - 1) ∣ Nat.gcd (2 ^ (2 * k) - 1) (2 ^ n - 1) := by
-    exact Nat.dvd_gcd ( dvd_trans ( Nat.gcd_dvd_left _ _ ) ( by use 2 ^ k - 1; rw [ ← Nat.sq_sub_sq ] ; ring ) ) ( Nat.gcd_dvd_right _ _ );
+    exact Nat.dvd_gcd ( dvd_trans ( Nat.gcd_dvd_left _ _ ) ( by use 2 ^ k - 1; rw [ ← Nat.sq_sub_sq ] ; ring_nf ) ) ( Nat.gcd_dvd_right _ _ );
   -- Since $\gcd(k, n) = 1$ and $n$ is odd, we have $\gcd(2k, n) = \gcd(2, n) \cdot \gcd(k, n) = 1$.
   have h_gcd_2k_n : Nat.gcd (2 * k) n = 1 := by
     exact Nat.Coprime.mul_left ( Nat.prime_two.coprime_iff_not_dvd.mpr <| by simpa [ ← even_iff_two_dvd, parity_simps ] using hn_odd ) hcop;
@@ -129,8 +129,8 @@ lemma kasami_arith_identity {k n : ℕ} (hk : 1 < k) (hn : 1 < n) (hkn : k < n) 
     (2 ^ (k - 1) * (2 ^ k + 1)) % (2 ^ n - 1) := by
   zify [ Int.ofNat_sub ( show 2 ^ n ≥ 1 from one_le_pow₀ ( by decide ) ) ];
   rcases n with ( _ | _ | n ) <;> rcases k with ( _ | _ | k ) <;> norm_num [ pow_succ' ] at *;
-  rw [ Nat.cast_sub, Nat.cast_sub ] <;> norm_num <;> ring;
-  · rw [ Nat.sub_sub, Nat.cast_sub ] <;> norm_num ; ring;
+  rw [ Nat.cast_sub, Nat.cast_sub ] <;> norm_num <;> ring_nf;
+  · rw [ Nat.sub_sub, Nat.cast_sub ] <;> norm_num ; ring_nf;
     · rw [ Int.emod_eq_emod_iff_emod_sub_eq_zero ] ; ring_nf ; norm_num;
       exact ⟨ 2 * 2 ^ n - 2 ^ k * 4 - 1, by ring ⟩;
     · linarith [ pow_pos ( by decide : 0 < 2 ) k, pow_lt_pow_right₀ ( by decide : 1 < 2 ) hkn ];

@@ -84,7 +84,7 @@ lemma DeltaBare_trace_adjoint' {n : ℕ} (hn : Fintype.card F = p ^ n)
     frobSum p n (u * DeltaBare' L₂ Minv (M y) v) := by
   have h_eq : frobSum p n (L₁ (u * y) * (v * M y)) = frobSum p n ((u * y) * L₂ (v * M y)) := by
     simpa only [ mul_comm ] using hAdj ( u * y ) ( v * M y );
-  convert h_eq using 1 <;> simp +decide [ DeltaBare' ] ; ring;
+  convert h_eq using 1 <;> simp +decide [ DeltaBare' ] ; ring_nf;
   grind +revert
 
 lemma additive_bij_iff_adj_bij' {n : ℕ} (hn : Fintype.card F = p ^ n) (hn1 : 1 ≤ n)
@@ -143,7 +143,7 @@ lemma DeltaBare_sub_bij_iff_adj' {n : ℕ} (hn : Fintype.card F = p ^ n) (hn1 : 
       aesop;
   apply additive_bij_iff_adj_bij';
   any_goals tauto;
-  · intro a b; simp +decide [ DeltaBare', hL₁_add, hL₂_add ] ; ring;
+  · intro a b; simp +decide [ DeltaBare', hL₁_add, hL₂_add ] ; ring_nf;
     rw [ hL₁_add, hL₁_add ] ; ring;
   · grind +suggestions
 
@@ -167,7 +167,7 @@ theorem adjoint_swap_bij_bare {n : ℕ} (hn : Fintype.card F = p ^ n) (hn1 : 1 �
   have hMinv_left : ∀ x : F, x ≠ 0 → (x ^ e) ^ l = x := by
     intro x hx_nonzero
     have h_exp : x ^ (e * l) = x := by
-      rw [ ← Nat.mod_add_div ( e * l ) ( Fintype.card F - 1 ), hel ] ; simp +decide [ pow_add, pow_mul, pow_one, hx_nonzero, pow_card_sub_one_eq_one' ] ; ring;
+      rw [ ← Nat.mod_add_div ( e * l ) ( Fintype.card F - 1 ), hel ] ; simp +decide [ pow_add, pow_mul, pow_one, hx_nonzero, pow_card_sub_one_eq_one' ] ; ring_nf;
       rcases k : Fintype.card F - 1 with ( _ | _ | k ) <;> simp_all +decide [ Nat.mod_eq_of_lt ];
       have := FiniteField.pow_card_sub_one_eq_one x; simp_all +decide ;
     simp_all +decide [ pow_mul ]

@@ -2,7 +2,7 @@ import Mathlib
 import DobbDempMue.FiniteField.TraceNorm
 import DobbDempMue.FiniteField.ExpArith
 import DobbDempMue.FiniteField.FrobAlg
-import DobbDempMue.FiniteField.BareLemma31Skeleton
+import DobbDempMue.DempwolffMueller2013.BareLemma31Skeleton
 
 /-!
 # Adjoint Bijectivity Transfer

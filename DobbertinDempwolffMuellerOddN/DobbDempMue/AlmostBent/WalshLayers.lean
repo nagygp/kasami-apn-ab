@@ -166,7 +166,7 @@ theorem parseval_perm {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
       simp +decide only [sq, ← Finset.mul_sum _ _ _, ← sum_mul];
     simp +decide only [h_expand, mul_add, Finset.mul_sum _ _ _, mul_comm];
     simp +decide only [← χ_mul, add_comm];
-    exact Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by ring ) );
+    exact Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by ring_nf ) );
   have h_inner : ∀ x y : F, ∑ b : F, χ (b * (f x + f y)) = if f x + f y = 0 then (Fintype.card F : ℤ) else 0 := by
     exact fun x y => by simpa only [ mul_comm ] using this ( f x + f y ) ;
   have h_bijective : ∀ x y : F, f x + f y = 0 ↔ x = y := by
@@ -247,13 +247,13 @@ theorem autocorr_sq_sum_b (f : F → F) (u : F) :
   simp +decide only [pow_two, sum_mul _ _ _];
   have h_fubini : ∑ x : F, ∑ i : F, ∑ j : F, χ (x * (f (i + u) + f i)) * χ (x * (f (j + u) + f j)) = ∑ i : F, ∑ j : F, ∑ x : F, χ (x * (f (i + u) + f i + f (j + u) + f j)) := by
     rw [ Finset.sum_comm, Finset.sum_congr rfl ];
-    intro x hx; rw [ Finset.sum_comm ] ; congr; ext y; congr; ext z; rw [ ← χ_mul ] ; ring;
+    intro x hx; rw [ Finset.sum_comm ] ; congr; ext y; congr; ext z; rw [ ← χ_mul ] ; ring_nf;
   have h_inner : ∀ i j : F, ∑ x : F, χ (x * (f (i + u) + f i + f (j + u) + f j)) = if f (i + u) + f i = f (j + u) + f j then (Fintype.card F : ℤ) else 0 := by
     intro i j; split_ifs with h; simp_all +decide [ ← eq_sub_iff_add_eq' ] ;
     · simp +decide [ add_assoc, add_left_comm, add_comm ];
       rw [ ← add_assoc, ← two_mul, ← two_mul ];
       rw [ show ( 2 : F ) = 0 by exact CharTwo.two_eq_zero ] ; simp +decide [ χ ] ;
-    · convert χ_sum_eq ( f ( i + u ) + f i + f ( j + u ) + f j ) using 1 ; ring;
+    · convert χ_sum_eq ( f ( i + u ) + f i + f ( j + u ) + f j ) using 1 ; ring_nf;
       · ac_rfl;
       · grind;
   simp_all +decide [ Finset.sum_ite ];
@@ -390,7 +390,7 @@ theorem walsh_pow_scaling (d : ℕ) (a b t : F) (ht : t ≠ 0) :
     have h_bij : Function.Bijective (fun x : F => t * x) := by
       exact ⟨ mul_right_injective₀ ht, mul_left_surjective₀ ht ⟩
     conv_rhs => rw [ ← Equiv.sum_comp ( Equiv.ofBijective _ h_bij ) ] ; simp +decide [ mul_assoc, mul_comm, mul_left_comm ] ;
-    exact Finset.sum_congr rfl fun _ _ => by ring;
+    exact Finset.sum_congr rfl fun _ _ => by ring_nf;
   exact h_change_var
 
 /-- Frobenius invariance: W(1, c²) = W(1, c). -/
@@ -402,7 +402,7 @@ theorem walsh_pow_frob_inv (d : ℕ) (c : F) :
     conv_lhs => rw [ ← Equiv.sum_comp ( Equiv.ofBijective _ h_bij ) ] ;
     rfl;
   have h_trace : ∀ y : F, χ (y ^ 2 + c ^ 2 * (y ^ 2) ^ d) = χ ((y + c * y ^ d) ^ 2) := by
-    intro y; ring;
+    intro y; ring_nf;
     simp +decide [ show ( 2 : F ) = 0 by exact CharP.cast_eq_zero F 2 ];
   have h_trace_sq : ∀ y : F, χ ((y + c * y ^ d) ^ 2) = χ (y + c * y ^ d) := by
     grind +suggestions;

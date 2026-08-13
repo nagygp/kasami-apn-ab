@@ -1,5 +1,5 @@
 import Mathlib
-import DobbDempMue.Core.KasamiDefs
+import DobbDempMue.FiniteField.KasamiDefs
 
 /-!
 # Kasami Exponent and Core Definitions

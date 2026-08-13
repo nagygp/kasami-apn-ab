@@ -33,8 +33,7 @@ theorem gold_coprime (k n : ℕ) (hcop : Nat.Coprime k n) (hnodd : Odd n) :
       Nat.gcd (2 ^ (2 * k) - 1) (2 ^ n - 1) :=
     Nat.dvd_gcd (dvd_trans (Nat.gcd_dvd_left _ _)
       (by use 2 ^ k - 1; zify; norm_num; ring)) (Nat.gcd_dvd_right _ _)
-  simp_all +decide [Nat.Coprime, Nat.Coprime.symm, Nat.Coprime.gcd_mul_left_cancel,
-    Nat.Coprime.gcd_mul_right_cancel]
+  simp_all +decide [Nat.Coprime, Nat.Coprime.symm, Nat.Coprime.gcd_mul_left_cancel]
 
 
 /-
@@ -110,7 +109,7 @@ theorem walsh_kasami_eq_quadratic {n : ℕ} (hcard : Fintype.card F = 2 ^ n)
   · intro x hx
     have := Classical.choose_spec (hg x)
     simp_all +decide;
-    rw [ ← this, ← d_mul_gold k hk ] ; ring;
+    rw [ ← this, ← d_mul_gold k hk ] ; ring_nf;
     grind +ring
 
 /-! ## Main result: Kasami Walsh divisibility -/

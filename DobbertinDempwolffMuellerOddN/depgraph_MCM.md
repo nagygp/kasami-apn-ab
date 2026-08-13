@@ -163,4 +163,4 @@ flowchart LR
 - The project-level MCM proof is [DobbDempMue/DempwolffMueller2013/MCM.lean](DobbDempMue/DempwolffMueller2013/MCM.lean).
 - The linking exponent and Gold-permutation results are in [DobbDempMue/DempwolffMueller2013/KasamiAPN.lean](DobbDempMue/DempwolffMueller2013/KasamiAPN.lean).
 - The main Dempwolff-Müller argument, truncated-trace lemmas, Dickson reduction, and Theorem 3.2 are in [DobbDempMue/DempwolffMueller2013/Thm32.lean](DobbDempMue/DempwolffMueller2013/Thm32.lean).
-- The $k'$ transfer-only adjoint facts come from [DobbDempMue/FiniteField/AdjointBij.lean](DobbDempMue/FiniteField/AdjointBij.lean), [DobbDempMue/FiniteField/FrobAlg.lean](DobbDempMue/FiniteField/FrobAlg.lean), and [DobbDempMue/FiniteField/TraceNorm.lean](DobbDempMue/FiniteField/TraceNorm.lean).
+- The $k'$ transfer-only adjoint facts come from [DobbDempMue/DempwolffMueller2013/AdjointBij.lean](DobbDempMue/DempwolffMueller2013/AdjointBij.lean), [DobbDempMue/FiniteField/FrobAlg.lean](DobbDempMue/FiniteField/FrobAlg.lean), and [DobbDempMue/FiniteField/TraceNorm.lean](DobbDempMue/FiniteField/TraceNorm.lean).
