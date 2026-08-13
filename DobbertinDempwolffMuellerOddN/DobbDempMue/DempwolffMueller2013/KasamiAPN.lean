@@ -1,9 +1,9 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiDefs
-import Dobbertin1999MVP.Core.FrobeniusMove
-import Dobbertin1999MVP.FiniteField.Thm32
-import Dobbertin1999MVP.FiniteField.ExpArith
-import Dobbertin1999MVP.FiniteField.FrobAlg
+import DobbDempMue.Core.KasamiDefs
+import DobbDempMue.Core.FrobeniusMove
+import DobbDempMue.DempwolffMueller2013.Thm32
+import DobbDempMue.FiniteField.ExpArith
+import DobbDempMue.FiniteField.FrobAlg
 
 /-!
 # Kasami APN Theorem

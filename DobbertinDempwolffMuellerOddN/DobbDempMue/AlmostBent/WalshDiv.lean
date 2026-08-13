@@ -1,5 +1,5 @@
-import Dobbertin1999MVP.AlmostBent.QuadraticDivisibility
-import Dobbertin1999MVP.AlmostBent.Defs
+import DobbDempMue.AlmostBent.QuadraticDivisibility
+import DobbDempMue.AlmostBent.Defs
 import Mathlib
 
 /-!

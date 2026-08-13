@@ -1,6 +1,6 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiAPN
-import Dobbertin1999MVP.FiniteField.Thm32
+import DobbDempMue.DempwolffMueller2013.KasamiAPN
+import DobbDempMue.DempwolffMueller2013.Thm32
 
 /-!
 # Dobbertin (1999) — the MCM permutation polynomials
@@ -13,7 +13,7 @@ Properties*, NATO Sci. Ser. C **542**, Kluwer, 1999, pp. 133–158).
 It records the **Müller–Cohen–Matthews (MCM) permutation polynomial** engine that
 underlies the paper's route to the APN property of Kasami power functions
 (Corollary 2).  Everything here is proved by *reusing* the project's finite-field
-development (`Dobbertin1999MVP/FiniteField/Thm32.lean`); nothing is re-proved from
+development (`DobbDempMue/FiniteField/Thm32.lean`); nothing is re-proved from
 scratch and nothing is left as `sorry`.
 
 ## The paper's setup (Section 2)
@@ -54,9 +54,9 @@ the project as `DempwolffMueller.theorem_3_2` (Müller–Cohen–Matthews) and i
   actually consumed by the MCM → APN chain.
 -/
 
-namespace Dobbertin1999.MCM
+namespace DempwolffMueller.MCM
 
-open DempwolffMueller
+
 
 /-- The **linearized (truncated) trace** `L_m(x) = Σ_{i=0}^{m-1} x^{2^i}`, the
 numerator building block of the MCM polynomial `P_β`.  Re-exported from
@@ -218,4 +218,4 @@ theorem mcm_permutation {F : Type*} [Field F] [Fintype F] [CharP F 2]
   exact h_gold.comp h_dempwolff
 
 
-end Dobbertin1999.MCM
+end DempwolffMueller.MCM

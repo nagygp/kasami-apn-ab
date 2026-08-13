@@ -1,7 +1,7 @@
-import Dobbertin1999MVP.Dobbertin1999.MCM
-import Dobbertin1999MVP.Dobbertin1999.MCMtoAPN
-import Dobbertin1999MVP.Dobbertin1999.APN
-import Dobbertin1999MVP.AlmostBent.KasamiAB
+import DobbDempMue.DempwolffMueller2013.MCM
+import DobbDempMue.Dobbertin1999.MCMtoAPN
+import DobbDempMue.Dobbertin1999.APN
+import DobbDempMue.AlmostBent.KasamiAB
 
 /-!
 # Dobbertin (1999) — MCM, MCM → APN, APN: standalone MVP entry point
@@ -14,7 +14,7 @@ formalisation of the **MCM**, **MCM → APN**, and **APN** parts of
 > Properties*, NATO Sci. Ser. C **542**, Kluwer Academic Publishers, 1999,
 > pp. 133–158.
 
-This folder (`Dobbertin1999MVP/`) is a self-contained extract of the larger
+This folder (`DobbDempMue/`) is a self-contained extract of the larger
 `RequestProject` development: it contains **only** the modules that actually
 contribute to the three headline transcriptions below, plus their finite-field
 prerequisites.  Every statement is proved end to end; the whole chain is
@@ -27,15 +27,15 @@ need not itself be odd.
 
 ## Module layout
 
-* `Dobbertin1999MVP/FiniteField/` — the finite-field engine: exponent arithmetic
+* `DobbDempMue/FiniteField/` — the finite-field engine: exponent arithmetic
   (`ExpArith`), Frobenius algebra (`FrobAlg`), trace/norm (`TraceNorm`), the
   additive-adjoint bijection (`AdjointBij`), the Lemma 3.1 skeleton
   (`BareLemma31Skeleton`), and the Müller–Cohen–Matthews permutation theorem
   `DempwolffMueller.theorem_3_2` (`Thm32`).
-* `Dobbertin1999MVP/Core/KasamiAPN.lean` — the Kasami APN engine built on top of
+* `DobbDempMue/DempwolffMueller2013/KasamiAPN.lean` — the Kasami APN engine built on top of
   the MCM permutation theorem (key identity, Gold permutation, injectivity
   bridge, two-to-one collapse, `KasamiAPN.kasami_is_apn_odd_n`).
-* `Dobbertin1999MVP/Dobbertin1999/` — the paper transcription in three parts:
+* `DobbDempMue/Dobbertin1999/` — the paper transcription in three parts:
     * `MCM.lean` — the MCM permutation polynomial theorem (Section 2);
     * `MCMtoAPN.lean` — the bridge used in the proof of Corollary 2;
     * `APN.lean` — Corollary 2: Kasami power functions are APN.
@@ -50,7 +50,7 @@ Kasami exponent. The exceptional complementary parameter `n - k = 1` is the
 cubic (`x ↦ x³`) case.
 
 ```
-Dobbertin1999.MCM.mcm_permutation_ktransfer        (Müller–Cohen–Matthews / Theorem 1 engine)
+DempwolffMueller.MCM.mcm_permutation_ktransfer        (Müller–Cohen–Matthews / Theorem 1 engine)
         │   x ↦ L_k(x)·x^{k'} is a permutation of 𝔽_{2ⁿ}
         ▼
 Dobbertin1999.MCMtoAPN.kasami_key_identity          ((x+1)^d + x^d + 1)·(x²+x)^{2^k} = (x^{2^k}+x)^{2^k+1}
@@ -70,11 +70,11 @@ namespace Dobbertin1999.Headlines
 
 /-- **MCM permutation theorem** (Müller–Cohen–Matthews). See
 `Dobbertin1999.MCM.mcm_permutation`. -/
-alias mcm_permutation := Dobbertin1999.MCM.mcm_permutation
+alias mcm_permutation := DempwolffMueller.MCM.mcm_permutation
 
 /-- **Dempwolff–Mueller permutation theorem, `k'`-transfer form** — the shape consumed by the
-APN chain.  See `Dobbertin1999.MCM.dempwolff_mueller_permutation_ktransfer`. -/
-alias mcm_permutation_ktransfer := Dobbertin1999.MCM.dempwolff_mueller_permutation_ktransfer
+APN chain.  See `DempwolffMueller.MCM.dempwolff_mueller_permutation_ktransfer`. -/
+alias mcm_permutation_ktransfer := DempwolffMueller.MCM.dempwolff_mueller_permutation_ktransfer
 
 /-- **The key identity** linking the Kasami derivative to the Gold exponent.  See
 `Dobbertin1999.MCMtoAPN.kasami_key_identity`. -/

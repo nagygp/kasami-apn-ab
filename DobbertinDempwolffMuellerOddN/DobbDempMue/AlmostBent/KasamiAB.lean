@@ -1,10 +1,10 @@
-import Dobbertin1999MVP.AlmostBent.WalshLayers
-import Dobbertin1999MVP.AlmostBent.CrossForm
-import Dobbertin1999MVP.AlmostBent.WalshDiv
+import DobbDempMue.AlmostBent.WalshLayers
+import DobbDempMue.AlmostBent.CrossForm
+import DobbDempMue.AlmostBent.WalshDiv
 -------------------------------------------
 -- Replace the following import with a
 -- proper proof of the Kasami APN theorem
-import Dobbertin1999MVP.AlmostBent.KasamiAPNInterface
+import DobbDempMue.AlmostBent.KasamiAPNInterface
 -------------------------------------------
 
 /-!

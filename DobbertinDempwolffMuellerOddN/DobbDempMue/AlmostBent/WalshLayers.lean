@@ -1,5 +1,5 @@
 import Mathlib
-import Dobbertin1999MVP.AlmostBent.Defs
+import DobbDempMue.AlmostBent.Defs
 
 /-!
 # Walsh Transform — Trace, Sign Character, and Orthogonality

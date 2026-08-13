@@ -2,10 +2,10 @@
 ## What I did
 
 ### 1. Made the library build and runnable
-The sources imported modules under a `Dobbertin1999MVP.*` prefix, but the files were physically laid out directly under `Core/`, `Dobbertin1999/`, `FiniteField/`, so nothing compiled. I:
-- Reorganized the tree into the intended `Dobbertin1999MVP/` package (matching the imports and the entry-file/README docs);
-- Added the `Dobbertin1999MVP.lean` entry point with the headline aliases;
-- Updated `lakefile.toml` (`defaultTargets`/`lean_lib` = `Dobbertin1999MVP`).
+The sources imported modules under a `DobbDempMue.*` prefix, but the files were physically laid out directly under `Core/`, `Dobbertin1999/`, `FiniteField/`, so nothing compiled. I:
+- Reorganized the tree into the intended `DobbDempMue/` package (matching the imports and the entry-file/README docs);
+- Added the `DobbDempMue.lean` entry point with the headline aliases;
+- Updated `lakefile.toml` (`defaultTargets`/`lean_lib` = `DobbDempMue`).
 
 `lake build` now succeeds (whole project), and all five headline results are `sorry`-free, resting only on `propext`, `Classical.choice`, `Quot.sound`:
 `mcm_permutation`, `dempwolff_mueller_permutation_ktransfer`, `kasami_key_identity`, `kasami_is_apn`, `kasami_is_apn_solution_count`.
@@ -28,4 +28,4 @@ Net effect: the code shrank from ~2300 lines / 12 files to ~1770 lines / 11 file
 - The core proofs (`FiniteField/BareLemma31Skeleton`, `Thm32`, `TraceNorm`, etc.) still emit some cosmetic linter messages (unused section variables / unused `simp` arguments / a couple of `ring` "try `ring_nf`" info hints) inside dense machine-style proofs. These are non-fatal and were left untouched to avoid destabilizing working proofs; they can be cleaned incrementally if desired.
 - No axioms or `@[implemented_by]` were introduced.
 
-All changes are committed and pushed to `main`. Relative paths of the deleted files: `Dobbertin1999MVP/FiniteField/AutBase.lean`, `Dobbertin1999MVP/FiniteField/Lemma31.lean`.
+All changes are committed and pushed to `main`. Relative paths of the deleted files: `DobbDempMue/FiniteField/AutBase.lean`, `DobbDempMue/FiniteField/Lemma31.lean`.

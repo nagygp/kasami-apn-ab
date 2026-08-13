@@ -1,8 +1,8 @@
 import Mathlib
-import Dobbertin1999MVP.FiniteField.TraceNorm
-import Dobbertin1999MVP.FiniteField.ExpArith
-import Dobbertin1999MVP.FiniteField.FrobAlg
-import Dobbertin1999MVP.FiniteField.AdjointBij
+import DobbDempMue.FiniteField.TraceNorm
+import DobbDempMue.FiniteField.ExpArith
+import DobbDempMue.FiniteField.FrobAlg
+import DobbDempMue.FiniteField.AdjointBij
 
 /-!
 # Theorem 3.2 — Dempwolff & Müller

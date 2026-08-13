@@ -1,6 +1,6 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiAPN
-import Dobbertin1999MVP.Dobbertin1999.MCM
+import DobbDempMue.DempwolffMueller2013.KasamiAPN
+import DobbDempMue.DempwolffMueller2013.MCM
 
 /-!
 # Dobbertin (1999) — the MCM → APN chain
@@ -10,7 +10,7 @@ This module is the **MCM → APN** part of the transcription of Dobbertin (1999)
 It records the bridge, used in the proof of **Corollary 2**, from the
 Dempwolff-Müller permutation theorem (`Dobbertin1999.MCM`) to the
 almost-perfect-nonlinearity of the Kasami power map.  Everything is proved by
-*reusing* the project's Kasami development (`Dobbertin1999MVP/Core/KasamiAPN.lean`);
+*reusing* the project's Kasami development (`DobbDempMue/Core/KasamiAPN.lean`);
 nothing is left as `sorry`.
 
 ## The paper's argument (proof of Corollary 2)

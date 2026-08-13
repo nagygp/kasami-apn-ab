@@ -1,5 +1,5 @@
-import Dobbertin1999MVP.AlmostBent.Defs
-import Dobbertin1999MVP.Dobbertin1999.APN
+import DobbDempMue.AlmostBent.Defs
+import DobbDempMue.Dobbertin1999.APN
 
 /-!
 # Kasami Almost Perfect Nonlinear (APN) Theorem

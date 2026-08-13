@@ -1,7 +1,7 @@
 # Dependency Graph: `mcm_permutation`
 
-This document describes the current proof of `Dobbertin1999.MCM.mcm_permutation`
-in [Dobbertin1999MVP/Dobbertin1999/MCM.lean](Dobbertin1999MVP/Dobbertin1999/MCM.lean).
+This document describes the current proof of `DempwolffMueller.MCM.mcm_permutation`
+in [DobbDempMue/DempwolffMueller2013/MCM.lean](DobbDempMue/DempwolffMueller2013/MCM.lean).
 
 For $F = \mathbb{F}_{2^n}$, the implemented MCM polynomial is
 
@@ -160,6 +160,7 @@ flowchart LR
 
 ## Source Map
 
-- The project-level MCM wrapper is [Dobbertin1999MVP/Dobbertin1999/MCM.lean](Dobbertin1999MVP/Dobbertin1999/MCM.lean).
-- The main argument, truncated-trace lemmas, Dickson reduction, and Theorem 3.2 are in [Dobbertin1999MVP/FiniteField/Thm32.lean](Dobbertin1999MVP/FiniteField/Thm32.lean).
-- The $k'$ transfer-only adjoint facts come from [Dobbertin1999MVP/FiniteField/AdjointBij.lean](Dobbertin1999MVP/FiniteField/AdjointBij.lean), [Dobbertin1999MVP/FiniteField/FrobAlg.lean](Dobbertin1999MVP/FiniteField/FrobAlg.lean), and [Dobbertin1999MVP/FiniteField/TraceNorm.lean](Dobbertin1999MVP/FiniteField/TraceNorm.lean).
+- The project-level MCM proof is [DobbDempMue/DempwolffMueller2013/MCM.lean](DobbDempMue/DempwolffMueller2013/MCM.lean).
+- The linking exponent and Gold-permutation results are in [DobbDempMue/DempwolffMueller2013/KasamiAPN.lean](DobbDempMue/DempwolffMueller2013/KasamiAPN.lean).
+- The main Dempwolff-Müller argument, truncated-trace lemmas, Dickson reduction, and Theorem 3.2 are in [DobbDempMue/DempwolffMueller2013/Thm32.lean](DobbDempMue/DempwolffMueller2013/Thm32.lean).
+- The $k'$ transfer-only adjoint facts come from [DobbDempMue/FiniteField/AdjointBij.lean](DobbDempMue/FiniteField/AdjointBij.lean), [DobbDempMue/FiniteField/FrobAlg.lean](DobbDempMue/FiniteField/FrobAlg.lean), and [DobbDempMue/FiniteField/TraceNorm.lean](DobbDempMue/FiniteField/TraceNorm.lean).

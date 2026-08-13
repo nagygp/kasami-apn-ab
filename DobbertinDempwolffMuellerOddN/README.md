@@ -26,10 +26,10 @@ almost-bent / difference-set layers is pulled in. The whole chain is
 
 ## Entry point
 
-`../Dobbertin1999MVP.lean` (Lean module `Dobbertin1999MVP`). Building it:
+`../DobbDempMue.lean` (Lean module `DobbDempMue`). Building it:
 
 ```
-lake build Dobbertin1999MVP
+lake build DobbDempMue
 ```
 
 ## Headline results
@@ -47,8 +47,8 @@ Exposed under namespace `Dobbertin1999.Headlines` (in the entry file):
 ## Module layout
 
 ```
-Dobbertin1999MVP.lean                      -- entry point + headline aliases
-Dobbertin1999MVP/
+DobbDempMue.lean                      -- entry point + headline aliases
+DobbDempMue/
   FiniteField/                             -- finite-field engine
     ExpArith.lean                          -- exponent arithmetic
     FrobAlg.lean                           -- Frobenius algebra

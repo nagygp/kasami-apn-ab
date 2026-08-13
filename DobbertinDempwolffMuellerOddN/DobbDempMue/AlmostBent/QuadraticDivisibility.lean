@@ -1,6 +1,6 @@
 import Mathlib
-import Dobbertin1999MVP.AlmostBent.WalshLayers
-import Dobbertin1999MVP.AlmostBent.Defs
+import DobbDempMue.AlmostBent.WalshLayers
+import DobbDempMue.AlmostBent.Defs
 
 /-!
 # Quadratic Gauss Sum Divisibility

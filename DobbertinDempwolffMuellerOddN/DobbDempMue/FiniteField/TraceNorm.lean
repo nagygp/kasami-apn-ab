@@ -1,5 +1,5 @@
 import Mathlib
-import Dobbertin1999MVP.FiniteField.FrobAlg
+import DobbDempMue.FiniteField.FrobAlg
 
 /-!
 # Foundational Layer F2: Trace and Norm Theory

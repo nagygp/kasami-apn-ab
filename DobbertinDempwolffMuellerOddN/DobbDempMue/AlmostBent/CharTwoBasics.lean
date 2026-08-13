@@ -1,4 +1,4 @@
-import Dobbertin1999MVP.AlmostBent.Defs
+import DobbDempMue.AlmostBent.Defs
 
 /-!
 # Characteristic 2 Basics and Linearized Polynomial Lemmas

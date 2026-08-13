@@ -1,4 +1,4 @@
-import Dobbertin1999MVP.AlmostBent.CharTwoBasics
+import DobbDempMue.AlmostBent.CharTwoBasics
 
 /-!
 # Cross Form Analysis and Collision Equation

@@ -1,5 +1,5 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiDefs
+import DobbDempMue.Core.KasamiDefs
 
 /-!
 # Kasami Exponent and Core Definitions

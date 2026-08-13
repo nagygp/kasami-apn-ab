@@ -1,6 +1,6 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiDefs
-import Dobbertin1999MVP.FiniteField.FrobAlg
+import DobbDempMue.Core.KasamiDefs
+import DobbDempMue.FiniteField.FrobAlg
 
 /-!
 # Frobenius Move for Kasami Exponents

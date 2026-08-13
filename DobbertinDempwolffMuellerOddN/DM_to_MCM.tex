@@ -39,7 +39,8 @@ Assume $0<m<n$, $m$ and $n$ are odd, and $\gcd(m,n)=1$.  Then
 $\MCM_{n,m}$ is a permutation of $F$.
 \end{theorem}
 
-This is the Lean theorem \texttt{Dobbertin1999.MCM.mcm\_permutation}.
+This is the Lean theorem \texttt{DempwolffMueller.MCM.mcm\_permutation}, in
+\texttt{DobbDempMue/DempwolffMueller2013/MCM.lean}.
 
 \section{Two Permutation Inputs}
 
@@ -117,6 +118,13 @@ The last equality is the finite-field Frobenius identity.  The Lean proof uses
 \texttt{Function.bijective\_id}.
 
 \section{Formal Dependency Summary}
+
+The supporting modules are
+\texttt{DobbDempMue/DempwolffMueller2013/KasamiAPN.lean} for the linking
+exponent and Gold map,
+\texttt{DobbDempMue/DempwolffMueller2013/Thm32.lean} for Theorem~3.2 and its
+transfer form, and \texttt{DobbDempMue/FiniteField/} for its finite-field
+support.
 
 \[
 \begin{array}{rcl}

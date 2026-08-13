@@ -1,7 +1,7 @@
 import Mathlib
-import Dobbertin1999MVP.FiniteField.TraceNorm
-import Dobbertin1999MVP.FiniteField.ExpArith
-import Dobbertin1999MVP.FiniteField.FrobAlg
+import DobbDempMue.FiniteField.TraceNorm
+import DobbDempMue.FiniteField.ExpArith
+import DobbDempMue.FiniteField.FrobAlg
 
 /-!
 # Bare-Function Lemma 3.1

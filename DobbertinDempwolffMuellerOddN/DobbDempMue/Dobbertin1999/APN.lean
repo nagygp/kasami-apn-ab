@@ -1,6 +1,6 @@
 import Mathlib
-import Dobbertin1999MVP.Core.KasamiAPN
-import Dobbertin1999MVP.Dobbertin1999.MCMtoAPN
+import DobbDempMue.DempwolffMueller2013.KasamiAPN
+import DobbDempMue.Dobbertin1999.MCMtoAPN
 
 /-!
 # Dobbertin (1999) — Corollary 2: Kasami power functions are APN
